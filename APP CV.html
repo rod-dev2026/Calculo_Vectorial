@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cálculo Vectorial — ITTUX · Rod Compañ 2026</title>
+<style>
+:root{
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  --bg:#f4f6f9;--panel:#ffffff;--ink:#1a1d23;--mut:#6b7280;--line:#e2e6ec;
+  --acc:#0f766e;--acc2:#c2410c;--acc3:#2563eb;--grid:#e8ecf1;--ax:#9ca3af;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.04);
+  --radius:14px;--radius-sm:9px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1117;--panel:#181b22;--ink:#e8eaed;--mut:#9aa0a6;--line:#2d3139;
+  --acc:#2dd4bf;--acc2:#fb923c;--acc3:#60a5fa;--grid:#232730;--ax:#5f6368;
+  --shadow:0 1px 3px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.2);}}
+:root[data-theme="dark"]{--bg:#0f1117;--panel:#181b22;--ink:#e8eaed;--mut:#9aa0a6;--line:#2d3139;--acc:#2dd4bf;--acc2:#fb923c;--acc3:#60a5fa;--grid:#232730;--ax:#5f6368;--shadow:0 1px 3px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.2);}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Inter","Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+header{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;background:var(--panel);position:sticky;top:0;z-index:100;backdrop-filter:blur(8px)}
+header h1{margin:0;font-size:1.05rem;font-weight:700;letter-spacing:-.01em}
+header p{margin:2px 0 0;color:var(--mut);font-size:.78rem}
+.header-actions{display:flex;gap:8px;align-items:center}
+#themeBtn,#infoBtn{background:var(--panel);border:1px solid var(--line);color:var(--ink);padding:8px 14px;border-radius:999px;font-size:.8rem;cursor:pointer;white-space:nowrap;transition:all .2s;font-weight:500}
+#themeBtn:hover,#infoBtn:hover{background:var(--bg);border-color:var(--acc)}
+#infoBtn{background:var(--acc);color:#fff;border-color:var(--acc)}
+#infoBtn:hover{opacity:.9;background:var(--acc)}
+#units{display:flex;gap:6px;padding:12px 20px 0;flex-wrap:wrap}
+#units button{background:transparent;border:1px solid var(--line);color:var(--mut);padding:8px 14px;border-radius:var(--radius-sm);font-size:.8rem;cursor:pointer;font-weight:600;transition:all .2s}
+#units button:hover{border-color:var(--acc);color:var(--acc)}
+#units button.on{background:var(--acc);border-color:var(--acc);color:#fff;box-shadow:0 2px 8px rgba(15,118,110,.25)}
+#tabs{display:flex;gap:6px;overflow-x:auto;padding:12px 20px;border-bottom:1px solid var(--line);scrollbar-width:thin}
+#tabs button{flex:0 0 auto;background:transparent;border:1px solid var(--line);color:var(--mut);padding:7px 13px;border-radius:999px;font-size:.78rem;cursor:pointer;transition:all .2s}
+#tabs button:hover{border-color:var(--acc2);color:var(--acc2)}
+#tabs button.on{background:var(--acc2);border-color:var(--acc2);color:#fff;font-weight:600}
+main{display:flex;flex-wrap:wrap;gap:16px;padding:16px 20px;align-items:flex-start;max-width:1400px;margin:0 auto}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+#ctrl{flex:1 1 320px;min-width:300px;max-width:100%}
+#view{flex:2 1 480px;min-width:300px}
+h2{margin:0 0 6px;font-size:1rem;font-weight:700}
+.desc{margin:0 0 14px;color:var(--mut);font-size:.82rem;line-height:1.5}
+label{display:block;font-size:.75rem;color:var(--mut);margin:10px 0 4px;font-weight:600;text-transform:uppercase;letter-spacing:.03em}
+input[type=text],input[type=number],select{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--bg);color:var(--ink);font-size:.88rem;font-family:ui-monospace,Menlo,Consolas,monospace;transition:border-color .2s}
+input[type=text]:focus,input[type=number]:focus,select:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(15,118,110,.1)}
+.row{display:flex;gap:8px}.row>div{flex:1}
+.row3{display:flex;gap:6px}.row3>div{flex:1}
+button.go{margin-top:16px;width:100%;padding:12px;border:0;border-radius:var(--radius-sm);background:var(--acc);color:#fff;font-weight:700;font-size:.9rem;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(15,118,110,.25)}
+button.go:hover{opacity:.9;transform:translateY(-1px);box-shadow:0 4px 12px rgba(15,118,110,.35)}
+canvas{width:100%;height:auto;display:block;border-radius:var(--radius-sm);background:var(--panel);touch-action:none;cursor:grab;border:1px solid var(--line)}
+.hint{color:var(--mut);font-size:.72rem;margin-top:10px;line-height:1.5}
+#out{margin-top:14px;font-size:.84rem}
+#out table{width:100%;border-collapse:collapse}
+#out td{padding:6px 0;border-bottom:1px solid var(--line);vertical-align:top}
+#out td:first-child{color:var(--mut);padding-right:12px;font-weight:500}
+#out td:last-child{text-align:right;font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:600}
+.err{color:var(--acc2);font-size:.82rem;margin-top:10px;padding:10px;background:rgba(194,65,12,.08);border-radius:var(--radius-sm);border-left:3px solid var(--acc2)}
+.tools{display:flex;gap:8px;margin-top:10px}
+.tools button{flex:1;background:transparent;border:1px solid var(--line);color:var(--mut);border-radius:var(--radius-sm);padding:8px;font-size:.76rem;cursor:pointer;transition:all .2s;font-weight:500}
+.tools button:hover{border-color:var(--acc);color:var(--acc);background:rgba(15,118,110,.05)}
+/* Examples dropdown */
+.ex-dropdown{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.ex-dropdown select{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--bg);color:var(--ink);font-size:.82rem;cursor:pointer;font-family:inherit}
+.ex-dropdown select:focus{outline:none;border-color:var(--acc)}
+.ex-dropdown option{padding:8px}
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:28px;max-width:520px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:85vh;overflow-y:auto}
+.modal h2{margin:0 0 16px;font-size:1.15rem;display:flex;align-items:center;gap:10px}
+.modal h2 .icon{font-size:1.3rem}
+.modal .info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:.85rem}
+.modal .info-row:last-child{border-bottom:none}
+.modal .info-row .label{color:var(--mut);font-weight:600}
+.modal .info-row .value{font-weight:600;text-align:right;font-family:ui-monospace,Menlo,Consolas,monospace}
+.modal .close-btn{margin-top:20px;width:100%;padding:10px;border:0;border-radius:var(--radius-sm);background:var(--acc);color:#fff;font-weight:700;font-size:.9rem;cursor:pointer;transition:opacity .2s}
+.modal .close-btn:hover{opacity:.9}
+.badge{display:inline-block;background:var(--acc);color:#fff;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:700;letter-spacing:.02em}
+.credit{color:var(--mut);font-size:.78rem;margin-top:4px}
+.credit strong{color:var(--acc)}
+</style>
+</head>
+<body>
+<header>
+  <div><h1>Cálculo Vectorial <span class="badge">ITTUX</span></h1><p>Unidades 1 a 5 · TecNM ACF-0904 · todos los subtemas · <strong>Rod Compa&ntilde; 2026</strong></p></div>
+  <div class="header-actions">
+    <button id="infoBtn" onclick="openInfo()">ℹ️ Info</button>
+    <button id="themeBtn" onclick="toggleTheme()">🌙 Modo oscuro</button>
+  </div>
+</header>
+<div id="units"></div>
+<nav id="tabs"></nav>
+<main>
+  <section class="card" id="ctrl"></section>
+  <section class="card" id="view">
+    <canvas id="cv" width="760" height="560"></canvas>
+    <div class="tools">
+      <button onclick="fitAny()">Ajustar vista</button>
+      <button onclick="zoomAny(1.25)">Acercar +</button>
+      <button onclick="zoomAny(1/1.25)">Alejar −</button>
+    </div>
+    <p class="hint" id="hintDrag">Arrastra para mover · rueda del ratón para acercar.</p>
+    <div id="out"></div>
+  </section>
+</main>
+
+<!-- Info Modal -->
+<div class="modal-overlay" id="infoModal">
+  <div class="modal">
+    <h2><span class="icon">📐</span> Acerca de este programa</h2>
+    <div class="info-row"><span class="label">Nombre</span><span class="value">Calculadora de Cálculo Vectorial</span></div>
+    <div class="info-row"><span class="label">Versión</span><span class="value">2.0.0</span></div>
+    <div class="info-row"><span class="label">Diseñador</span><span class="value">Rodrigo Compa&ntilde; Sarmiento</span></div>
+    <div class="info-row"><span class="label">Institución</span><span class="value">ITTUX</span></div>
+    <div class="info-row"><span class="label">Materia</span><span class="value">Cálculo Vectorial (ACF-0904)</span></div>
+    <div class="info-row"><span class="label">Lenguajes</span><span class="value">HTML5 · CSS3 · JavaScript</span></div>
+    <div class="info-row"><span class="label">Gráficos</span><span class="value">Canvas 2D / 3D nativo</span></div>
+    <div class="info-row"><span class="label">Año</span><span class="value">2026</span></div>
+    <div class="info-row"><span class="label">Descripción</span><span class="value" style="font-family:inherit;font-weight:400;text-align:right;max-width:60%">Herramienta interactiva para el aprendizaje de cálculo vectorial. Incluye graficación 2D/3D, cálculo simbólico-numérico, derivadas parciales, integrales múltiples, campos vectoriales y más.</span></div>
+    <button class="close-btn" onclick="closeInfo()">Cerrar</button>
+  </div>
+</div>
+
+<script>
+/* ================= THEME ================= */
+var theme=null;
+function toggleTheme(){theme=theme==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',theme);
+  document.getElementById('themeBtn').textContent=theme==='dark'?'☀️ Modo claro':'🌙 Modo oscuro';
+  draw()}
+function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+
+/* ================= INFO MODAL ================= */
+function openInfo(){document.getElementById('infoModal').classList.add('show')}
+function closeInfo(){document.getElementById('infoModal').classList.remove('show')}
+document.getElementById('infoModal').addEventListener('click',function(e){if(e.target===this)closeInfo()});
+
+/* ================= EXPR PARSER ================= */
+var FN={sin:Math.sin,cos:Math.cos,tan:Math.tan,asin:Math.asin,acos:Math.acos,atan:Math.atan,
+ sinh:Math.sinh,cosh:Math.cosh,tanh:Math.tanh,exp:Math.exp,ln:Math.log,log:Math.log10,
+ sqrt:Math.sqrt,abs:Math.abs,sign:Math.sign,floor:Math.floor,
+ sec:function(x){return 1/Math.cos(x)},csc:function(x){return 1/Math.sin(x)},
+ cot:function(x){return 1/Math.tan(x)},pow:Math.pow,atan2:Math.atan2,min:Math.min,max:Math.max};
+function compile(src){
+  var s=String(src).toLowerCase(),i=0;
+  function ws(){while(s[i]===' '||s[i]==='\t')i++}
+  function pk(){ws();return s[i]}
+  function er(m){throw new Error(m)}
+  function expr(){var v=term(),o;while((o=pk())==='+'||o==='-'){i++;var r=term(),a=v;
+    v=o==='+'?function(a,r){return function(c){return a(c)+r(c)}}(a,r):function(a,r){return function(c){return a(c)-r(c)}}(a,r);}return v}
+  function term(){var v=un(),o;for(;;){o=pk();
+    if(o==='*'||o==='/'){i++;var r=un(),a=v;
+      v=o==='*'?function(a,r){return function(c){return a(c)*r(c)}}(a,r):function(a,r){return function(c){return a(c)/r(c)}}(a,r);}
+    else if(o&&/[a-z(0-9.]/.test(o)){var r2=un(),a2=v;v=function(a,r){return function(c){return a(c)*r(c)}}(a2,r2);}
+    else break;}return v}
+  function un(){var o=pk();if(o==='-'){i++;var a=un();return function(c){return -a(c)}}
+    if(o==='+'){i++;return un()}return pw()}
+  function pw(){var b=atom();if(pk()==='^'){i++;var e=un();return function(c){return Math.pow(b(c),e(c))}}return b}
+  function atom(){ws();
+    var m=/^\d*\.?\d+/.exec(s.slice(i));
+    if(m){i+=m[0].length;var v=parseFloat(m[0]);return function(){return v}}
+    if(s[i]==='('){i++;var e=expr();if(pk()!==')')er('falta un paréntesis ")"');i++;return e}
+    m=/^[a-z]+/.exec(s.slice(i));
+    if(m){var n=m[0];i+=n.length;
+      if(pk()==='('&&FN[n]){i++;var a=expr(),b=null;if(pk()===','){i++;b=expr()}
+        if(pk()!==')')er('falta ")" en '+n);i++;var f=FN[n];
+        return b?function(c){return f(a(c),b(c))}:function(c){return f(a(c))}}
+      if(n==='pi')return function(){return Math.PI};
+      if(n==='e')return function(){return Math.E};
+      return function(c){if(!(n in c))er('variable desconocida: '+n);return c[n]}}
+    er('no entiendo «'+s.slice(i,i+8)+'»')}
+  var f=expr();ws();if(i<s.length)er('sobra «'+s.slice(i)+'»');
+  return function(c){var r=f(c);return typeof r==='number'?r:NaN}
+}
+function val(id){return document.getElementById(id).value}
+function fv(id){return compile(val(id))({})}
+function num(v,d){if(v==null||!isFinite(v))return '—';d=d==null?5:d;
+  return Math.abs(v)>=1e6||(Math.abs(v)<1e-4&&v!==0)?v.toExponential(4):(+v.toFixed(d)).toString()}
+function table(rows){var h='<table>',i;for(i=0;i<rows.length;i++)h+='<tr><td>'+rows[i][0]+'</td><td>'+rows[i][1]+'</td></tr>';return h+'</table>'}
+function show(html){document.getElementById('out').innerHTML=html}
+function fail(e){show('<p class="err">⚠ '+e.message+'</p>')}
+
+/* ================= NUMERIC HELPERS ================= */
+var H=1e-5;
+function d1(f,t){return (f({t:t+H})-f({t:t-H}))/(2*H)}
+function d2(f,t){return (f({t:t+H})-2*f({t:t})+f({t:t-H}))/(H*H)}
+function pdx(f,x,y){return (f({x:x+H,y:y})-f({x:x-H,y:y}))/(2*H)}
+function pdy(f,x,y){return (f({x:x,y:y+H})-f({x:x,y:y-H}))/(2*H)}
+function pdxx(f,x,y){return (f({x:x+H,y:y})-2*f({x:x,y:y})+f({x:x-H,y:y}))/(H*H)}
+function pdyy(f,x,y){return (f({x:x,y:y+H})-2*f({x:x,y:y})+f({x:x,y:y-H}))/(H*H)}
+function pdxy(f,x,y){return (pdy(f,x+H,y)-pdy(f,x-H,y))/(2*H)}
+function simpson(g,a,b,n){n=n||2000;if(n%2)n++;var h=(b-a)/n,s=g(a)+g(b),i;
+  for(i=1;i<n;i++)s+=g(a+i*h)*(i%2?4:2);return s*h/3}
+function dbl(f,x0,x1,y0,y1,n){n=n||50;var hx=(x1-x0)/n,hy=(y1-y0)/n,s=0,i,j;
+  for(i=0;i<n;i++)for(j=0;j<n;j++)s+=f(x0+(i+.5)*hx,y0+(j+.5)*hy)*hx*hy;return s}
+function trip(f,x0,x1,y0,y1,z0,z1,n){n=n||18;var hx=(x1-x0)/n,hy=(y1-y0)/n,hz=(z1-z0)/n,s=0,i,j,k;
+  for(i=0;i<n;i++)for(j=0;j<n;j++)for(k=0;k<n;k++)s+=f(x0+(i+.5)*hx,y0+(j+.5)*hy,z0+(k+.5)*hz)*hx*hy*hz;return s}
+function roots(f,a,b,n){var r=[],i,pa=f(a);for(i=1;i<=n;i++){var t=a+(b-a)*i/n,pb=f(t);
+  if(isFinite(pa)&&isFinite(pb)&&pa*pb<0){var lo=a+(b-a)*(i-1)/n,hi=t,k;
+    for(k=0;k<60;k++){var m=(lo+hi)/2;if(f(lo)*f(m)<=0)hi=m;else lo=m}r.push((lo+hi)/2)}pa=pb}return r}
+function vsub(a,b){return [a[0]-b[0],a[1]-b[1],a[2]-b[2]]}
+function vadd(a,b){return [a[0]+b[0],a[1]+b[1],a[2]+b[2]]}
+function vscl(a,k){return [a[0]*k,a[1]*k,a[2]*k]}
+function vdot(a,b){return a[0]*b[0]+a[1]*b[1]+a[2]*b[2]}
+function vcross(a,b){return [a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]]}
+function vlen(a){return Math.sqrt(vdot(a,a))}
+function vnorm(a){var l=vlen(a);return l>1e-12?vscl(a,1/l):[0,0,0]}
+
+/* ================= CANVAS ================= */
+var cv=document.getElementById('cv'),cx=cv.getContext('2d');
+var MODE='2d', items=[], items3=[];
+var V2={cx:0,cy:0,s:60};
+var V3={ax:-0.5,ay:0.7,s:60,px:0,py:0};
+function X2(x){return cv.width/2+(x-V2.cx)*V2.s}
+function Y2(y){return cv.height/2-(y-V2.cy)*V2.s}
+function fitAny(){if(MODE==='2d')fit2();else fit3()}
+function zoomAny(k){if(MODE==='2d'){V2.s*=k;}else{V3.s*=k;}draw()}
+function draw(){if(MODE==='2d')draw2();else draw3()}
+
+function fit2(){var xs=[],ys=[],i,j;
+  for(i=0;i<items.length;i++){var it=items[i];
+    if(it.pts)for(j=0;j<it.pts.length;j++){var p=it.pts[j];if(isFinite(p[0])&&isFinite(p[1])){xs.push(p[0]);ys.push(p[1])}}
+    if(it.x!=null&&isFinite(it.x)){xs.push(it.x);ys.push(it.y)}}
+  if(!xs.length){V2={cx:0,cy:0,s:60};return draw()}
+  var x0=Math.min.apply(null,xs),x1=Math.max.apply(null,xs),y0=Math.min.apply(null,ys),y1=Math.max.apply(null,ys);
+  x0=Math.min(x0,0);x1=Math.max(x1,0);y0=Math.min(y0,0);y1=Math.max(y1,0);
+  var w=Math.max(x1-x0,1e-3),h=Math.max(y1-y0,1e-3);
+  V2.cx=(x0+x1)/2;V2.cy=(y0+y1)/2;V2.s=Math.min(cv.width/(w*1.25),cv.height/(h*1.25));draw()}
+function draw2(){
+  var w=cv.width,h=cv.height;cx.clearRect(0,0,w,h);cx.fillStyle=css('--panel');cx.fillRect(0,0,w,h);
+  var step=Math.pow(10,Math.floor(Math.log10(120/V2.s)));
+  if(120/V2.s/step>5)step*=5;else if(120/V2.s/step>2)step*=2;
+  var xa=V2.cx-w/2/V2.s,xb=V2.cx+w/2/V2.s,ya=V2.cy-h/2/V2.s,yb=V2.cy+h/2/V2.s,i;
+  cx.lineWidth=1;cx.strokeStyle=css('--grid');cx.beginPath();
+  for(i=Math.ceil(xa/step);i*step<=xb;i++){cx.moveTo(X2(i*step),0);cx.lineTo(X2(i*step),h)}
+  for(i=Math.ceil(ya/step);i*step<=yb;i++){cx.moveTo(0,Y2(i*step));cx.lineTo(w,Y2(i*step))}
+  cx.stroke();
+  cx.strokeStyle=css('--ax');cx.lineWidth=1.5;cx.beginPath();
+  cx.moveTo(0,Y2(0));cx.lineTo(w,Y2(0));cx.moveTo(X2(0),0);cx.lineTo(X2(0),h);cx.stroke();
+  cx.fillStyle=css('--mut');cx.font='12px system-ui';
+  for(i=Math.ceil(xa/step);i*step<=xb;i++)if(i)cx.fillText(num(i*step,3),X2(i*step)+3,Y2(0)+14);
+  for(i=Math.ceil(ya/step);i*step<=yb;i++)if(i)cx.fillText(num(i*step,3),X2(0)+5,Y2(i*step)-3);
+  for(var k=0;k<items.length;k++){var it=items[k];
+    if(it.type==='fill'&&it.pts.length>1){cx.beginPath();cx.moveTo(X2(it.pts[0][0]),Y2(it.pts[0][1]));
+      for(i=1;i<it.pts.length;i++)cx.lineTo(X2(it.pts[i][0]),Y2(it.pts[i][1]));
+      cx.closePath();cx.globalAlpha=.22;cx.fillStyle=it.c||css('--acc');cx.fill();cx.globalAlpha=1}
+    else if(it.type==='curve'){cx.strokeStyle=it.c||css('--acc');cx.lineWidth=it.w||2.2;
+      cx.beginPath();var up=true;
+      for(i=0;i<it.pts.length;i++){var p=it.pts[i];
+        if(!isFinite(p[0])||!isFinite(p[1])){up=true;continue}
+        if(up){cx.moveTo(X2(p[0]),Y2(p[1]));up=false}else cx.lineTo(X2(p[0]),Y2(p[1]))}
+      if(it.dash){cx.setLineDash([6,5]);cx.stroke();cx.setLineDash([])}else cx.stroke()}
+    else if(it.type==='vec2'){arrow2(it.from||[0,0],it.to,it.c||css('--acc2'));
+      if(it.label){cx.fillStyle=css('--ink');cx.font='12px system-ui';cx.fillText(it.label,X2(it.to[0])+8,Y2(it.to[1])-6)}}
+    else if(it.type==='pt'){cx.fillStyle=it.c||css('--acc2');cx.beginPath();
+      cx.arc(X2(it.x),Y2(it.y),it.r||5,0,6.2832);cx.fill();
+      if(it.label){cx.fillStyle=css('--ink');cx.font='12px system-ui';cx.fillText(it.label,X2(it.x)+8,Y2(it.y)-8)}}
+  }}
+function arrow2(from,to,c){cx.strokeStyle=c;cx.fillStyle=c;cx.lineWidth=2.4;
+  cx.beginPath();cx.moveTo(X2(from[0]),Y2(from[1]));cx.lineTo(X2(to[0]),Y2(to[1]));cx.stroke();
+  var ang=Math.atan2(Y2(to[1])-Y2(from[1]),X2(to[0])-X2(from[0])),len=10;
+  cx.beginPath();cx.moveTo(X2(to[0]),Y2(to[1]));
+  cx.lineTo(X2(to[0])-len*Math.cos(ang-0.4),Y2(to[1])-len*Math.sin(ang-0.4));
+  cx.lineTo(X2(to[0])-len*Math.cos(ang+0.4),Y2(to[1])-len*Math.sin(ang+0.4));
+  cx.closePath();cx.fill()}
+
+function rot3(p){var x=p[0],y=p[1],z=p[2];
+  var cy=Math.cos(V3.ay),sy=Math.sin(V3.ay);var x1=x*cy+z*sy,z1=z*cy-x*sy;
+  var cx0=Math.cos(V3.ax),sx=Math.sin(V3.ax);var y1=y*cx0-z1*sx,z2=y*sx+z1*cx0;
+  return [x1,y1,z2]}
+function P3(p){var r=rot3(p);return {X:cv.width/2+r[0]*V3.s+V3.px,Y:cv.height/2-r[1]*V3.s+V3.py,z:r[2]}}
+function fit3(){var m=1,i,j;
+  function chk(p){var a=Math.max(Math.abs(p[0]),Math.abs(p[1]),Math.abs(p[2]));if(a>m)m=a}
+  for(i=0;i<items3.length;i++){var it=items3[i];
+    if(it.pts)for(j=0;j<it.pts.length;j++)if(isFinite(it.pts[j][0]))chk(it.pts[j]);
+    if(it.from)chk(it.from); if(it.to)chk(it.to); if(it.p)chk(it.p);
+    if(it.grid)for(j=0;j<it.grid.length;j++)for(var k=0;k<it.grid[j].length;k++)if(isFinite(it.grid[j][k][0]))chk(it.grid[j][k]);}
+  V3.L=Math.max(m*1.15,0.5);V3.s=Math.min(cv.width,cv.height)*0.36/V3.L;V3.px=0;V3.py=0;draw()}
+function draw3(){var w=cv.width,h=cv.height;cx.clearRect(0,0,w,h);cx.fillStyle=css('--panel');cx.fillRect(0,0,w,h);
+  var L=V3.L||3;
+  var axs=[[[-L,0,0],[L,0,0],'X'],[[0,-L,0],[0,L,0],'Y'],[[0,0,-L],[0,0,L],'Z']],i;
+  cx.strokeStyle=css('--ax');cx.lineWidth=1.3;cx.font='12px system-ui';cx.fillStyle=css('--mut');
+  for(i=0;i<axs.length;i++){var a=P3(axs[i][0]),b=P3(axs[i][1]);
+    cx.beginPath();cx.moveTo(a.X,a.Y);cx.lineTo(b.X,b.Y);cx.stroke();cx.fillText(axs[i][2],b.X+4,b.Y-4)}
+  cx.strokeStyle=css('--grid');cx.lineWidth=1;
+  var step=Math.max(1,Math.round(L/4));
+  for(var g=-Math.floor(L/step)*step;g<=L;g+=step){if(!g)continue;
+    var p1=P3([g,0,0]);cx.beginPath();cx.arc(p1.X,p1.Y,2,0,6.28);cx.stroke();}
+  var prims=[];
+  for(i=0;i<items3.length;i++){var it=items3[i];
+    if(it.type==='curve3'){var pp=it.pts.map(P3);var dz=0,cnt=0;for(var q=0;q<pp.length;q++)if(isFinite(pp[q].z)){dz+=pp[q].z;cnt++}
+      prims.push({z:cnt?dz/cnt:0,draw:function(pp,c,w){return function(){cx.strokeStyle=c;cx.lineWidth=w;cx.beginPath();var up=true;
+        for(var k=0;k<pp.length;k++){if(!isFinite(pp[k].X)){up=true;continue}if(up){cx.moveTo(pp[k].X,pp[k].Y);up=false}else cx.lineTo(pp[k].X,pp[k].Y)}cx.stroke()}}(pp,it.c||css('--acc'),it.w||2.2)})}
+    else if(it.type==='vec3'){var f=P3(it.from||[0,0,0]),t=P3(it.to);
+      prims.push({z:(f.z+t.z)/2,draw:function(f,t,c,label){return function(){
+        cx.strokeStyle=c;cx.fillStyle=c;cx.lineWidth=2.6;cx.beginPath();cx.moveTo(f.X,f.Y);cx.lineTo(t.X,t.Y);cx.stroke();
+        var ang=Math.atan2(t.Y-f.Y,t.X-f.X),len=11;
+        cx.beginPath();cx.moveTo(t.X,t.Y);cx.lineTo(t.X-len*Math.cos(ang-0.4),t.Y-len*Math.sin(ang-0.4));
+        cx.lineTo(t.X-len*Math.cos(ang+0.4),t.Y-len*Math.sin(ang+0.4));cx.closePath();cx.fill();
+        if(label){cx.fillStyle=css('--ink');cx.font='12px system-ui';cx.fillText(label,t.X+6,t.Y-6)}
+      }}(f,t,it.c||css('--acc2'),it.label)})}
+    else if(it.type==='point3'){var p=P3(it.p);
+      prims.push({z:p.z,draw:function(p,c,label){return function(){cx.fillStyle=c;cx.beginPath();cx.arc(p.X,p.Y,5,0,6.28);cx.fill();
+        if(label){cx.fillStyle=css('--ink');cx.font='12px system-ui';cx.fillText(label,p.X+7,p.Y-7)}}}(p,it.c||css('--acc2'),it.label)})}
+    else if(it.type==='surface'){var g=it.grid,c=it.c||css('--acc');
+      for(var r0=0;r0<g.length-1;r0++)for(var c0=0;c0<g[0].length-1;c0++){
+        var qs=[g[r0][c0],g[r0][c0+1],g[r0+1][c0+1],g[r0+1][c0]];
+        if(qs.some(function(p){return !isFinite(p[0])||!isFinite(p[1])||!isFinite(p[2])}))continue;
+        var pp=qs.map(P3),dz=(pp[0].z+pp[1].z+pp[2].z+pp[3].z)/4;
+        prims.push({z:dz,draw:function(pp,c){return function(){
+          cx.beginPath();cx.moveTo(pp[0].X,pp[0].Y);cx.lineTo(pp[1].X,pp[1].Y);cx.lineTo(pp[2].X,pp[2].Y);cx.lineTo(pp[3].X,pp[3].Y);cx.closePath();
+          cx.fillStyle=c;cx.globalAlpha=.85;cx.fill();cx.globalAlpha=1;
+          cx.strokeStyle=css('--panel');cx.lineWidth=.5;cx.stroke();
+        }}(pp,c)})}}
+    else if(it.type==='plane3'){var g=it.grid,c=it.c||css('--acc3');
+      var pp=g.map(P3),dz=(pp[0].z+pp[1].z+pp[2].z+pp[3].z)/4;
+      prims.push({z:dz,draw:function(pp,c){return function(){cx.beginPath();cx.moveTo(pp[0].X,pp[0].Y);cx.lineTo(pp[1].X,pp[1].Y);
+        cx.lineTo(pp[2].X,pp[2].Y);cx.lineTo(pp[3].X,pp[3].Y);cx.closePath();cx.globalAlpha=.28;cx.fillStyle=c;cx.fill();
+        cx.globalAlpha=1;cx.strokeStyle=c;cx.lineWidth=1.4;cx.stroke()}}(pp,c)})}
+  }
+  prims.sort(function(a,b){return a.z-b.z});
+  for(i=0;i<prims.length;i++)prims[i].draw();
+}
+
+var drag=null;
+cv.addEventListener('pointerdown',function(e){drag={x:e.offsetX,y:e.offsetY};cv.setPointerCapture(e.pointerId)});
+cv.addEventListener('pointermove',function(e){if(!drag)return;var sc=cv.width/cv.clientWidth;
+  if(MODE==='2d'){V2.cx-=(e.offsetX-drag.x)*sc/V2.s;V2.cy+=(e.offsetY-drag.y)*sc/V2.s;}
+  else{V3.ay+=(e.offsetX-drag.x)*sc*0.008;V3.ax+=(e.offsetY-drag.y)*sc*0.008;
+    V3.ax=Math.max(-1.5,Math.min(1.5,V3.ax));}
+  drag={x:e.offsetX,y:e.offsetY};draw()});
+cv.addEventListener('pointerup',function(){drag=null});
+cv.addEventListener('wheel',function(e){e.preventDefault();zoomAny(e.deltaY<0?1.12:1/1.12)},{passive:false});
+
+function setHint(){document.getElementById('hintDrag').textContent=MODE==='2d'?
+  'Arrastra para mover la gráfica · rueda del ratón para acercar.':
+  'Arrastra para rotar la vista 3D · rueda del ratón para acercar.'}
+
+/* ================= FORM SNIPPETS ================= */
+function VEC(pfx,dv){return '<div class="row3"><div><label>'+pfx+'x</label><input type="text" id="'+pfx+'x" value="'+dv[0]+'"></div>'+
+  '<div><label>'+pfx+'y</label><input type="text" id="'+pfx+'y" value="'+dv[1]+'"></div>'+
+  '<div><label>'+pfx+'z</label><input type="text" id="'+pfx+'z" value="'+dv[2]+'"></div></div>'}
+function getVec(pfx){return [fv(pfx+'x'),fv(pfx+'y'),fv(pfx+'z')]}
+var PAR3='<label>x(t)</label><input type="text" id="fx" value="{X}">'+
+        '<label>y(t)</label><input type="text" id="fy" value="{Y}">'+
+        '<label>z(t)</label><input type="text" id="fz" value="{Z}">'+
+        '<div class="row"><div><label>t inicial</label><input type="text" id="ta" value="{A}"></div>'+
+        '<div><label>t final</label><input type="text" id="tb" value="{B}"></div></div>';
+function par3(X,Y,Z,A,B){return PAR3.replace('{X}',X).replace('{Y}',Y).replace('{Z}',Z).replace('{A}',A).replace('{B}',B)}
+function getPar3(){var fx=compile(val('fx')),fy=compile(val('fy')),fz=compile(val('fz')),a=fv('ta'),b=fv('tb');
+  if(!isFinite(a)||!isFinite(b)||b<=a)throw new Error('Intervalo de t no válido.');return {fx:fx,fy:fy,fz:fz,a:a,b:b}}
+function sampleR(P,n){var p=[],i;for(i=0;i<=n;i++){var t=P.a+(P.b-P.a)*i/n,x,y,z;
+  try{x=P.fx({t:t});y=P.fy({t:t});z=P.fz({t:t})}catch(e){x=y=z=NaN}p.push([x,y,z])}return p}
+var PAR2='<label>x(t)</label><input type="text" id="fx" value="{X}">'+
+        '<label>y(t)</label><input type="text" id="fy" value="{Y}">'+
+        '<div class="row"><div><label>t inicial</label><input type="text" id="ta" value="{A}"></div>'+
+        '<div><label>t final</label><input type="text" id="tb" value="{B}"></div></div>';
+function par2(X,Y,A,B){return PAR2.replace('{X}',X).replace('{Y}',Y).replace('{A}',A).replace('{B}',B)}
+function getPar2(){var fx=compile(val('fx')),fy=compile(val('fy')),a=fv('ta'),b=fv('tb');
+  if(!isFinite(a)||!isFinite(b)||b<=a)throw new Error('Intervalo de t no válido.');return {fx:fx,fy:fy,a:a,b:b}}
+function sample2(fx,fy,a,b,n){var p=[],i;for(i=0;i<=n;i++){var t=a+(b-a)*i/n,x,y;
+  try{x=fx({t:t});y=fy({t:t})}catch(e){x=NaN;y=NaN}p.push([x,y,t])}return p}
+
+/* ================= EXAMPLES DATABASE ================= */
+var EXAMPLES={
+'1.1':[{n:'Vector (3,2,4)',v:{ax:'3',ay:'2',az:'4'}},{n:'Vector unitario i',v:{ax:'1',ay:'0',az:'0'}},{n:'Vector (1,1,1)',v:{ax:'1',ay:'1',az:'1'}},{n:'Vector grande (5,12,0)',v:{ax:'5',ay:'12',az:'0'}}],
+'1.2':[{n:'A=(3,1,2), B=(1,3,-1), k=2',v:{ax:'3',ay:'1',az:'2',bx:'1',by:'3',bz:'-1',kk:'2'}},{n:'A=(1,0,0), B=(0,1,0)',v:{ax:'1',ay:'0',az:'0',bx:'0',by:'1',bz:'0',kk:'1'}}],
+'1.3':[{n:'A=(2,3,1), B=(1,-1,2)',v:{ax:'2',ay:'3',az:'1',bx:'1',by:'-1',bz:'2'}},{n:'A=(1,0,0), B=(0,1,0)',v:{ax:'1',ay:'0',az:'0',bx:'0',by:'1',bz:'0'}}],
+'1.4':[{n:'P₀=(1,0,2), D=(2,1,-1)',v:{px:'1',py:'0',pz:'2',dx:'2',dy:'1',dz:'-1'}},{n:'Recta eje X',v:{px:'0',py:'0',pz:'0',dx:'1',dy:'0',dz:'0'}}],
+'1.5':[{n:'Plano z=1',v:{px:'0',py:'0',pz:'1',nx:'0',ny:'0',nz:'1'}},{n:'Plano x+y+z=1',v:{px:'0',py:'0',pz:'1',nx:'1',ny:'1',nz:'1'}}],
+'1.6':[{n:'F=(4,0,3), d=(2,3,0)',v:{fx:'4',fy:'0',fz:'3',dx:'2',dy:'3',dz:'0'}}],
+'2.1':[{n:'Elipse 3cos(t),2sin(t)',v:{fx:'3cos(t)',fy:'2sin(t)',ta:'0',tb:'2pi'}},{n:'Cicloide',v:{fx:'t-sin(t)',fy:'1-cos(t)',ta:'0',tb:'4pi'}},{n:'Astroide',v:{fx:'4cos(t)^3',fy:'4sin(t)^3',ta:'0',tb:'2pi'}},{n:'Parábola',v:{fx:'t',fy:'t^2-3',ta:'-3',tb:'3'}}],
+'2.2':[{n:'x=t², y=t³-3t',v:{fx:'t^2',fy:'t^3-3t',ta:'-2.2',tb:'2.2',t0:'1'}}],
+'2.3':[{n:'x=t²-2t, y=t³-3t',v:{fx:'t^2-2t',fy:'t^3-3t',ta:'-2.5',tb:'2.5',t0:'0.5'}}],
+'2.4':[{n:'Cicloide',v:{fx:'t-sin(t)',fy:'1-cos(t)',ta:'0',tb:'2pi'}},{n:'Círculo',v:{fx:'cos(t)',fy:'sin(t)',ta:'0',tb:'2pi'}}],
+'2.5':[{n:'Cardioide',v:{fr:'2+2cos(t)',ta:'0',tb:'2pi',t0:'pi/3'}},{n:'Rosa 3 pétalos',v:{fr:'3sin(3t)',ta:'0',tb:'2pi',t0:'pi/6'}},{n:'Espiral',v:{fr:'0.3t',ta:'0',tb:'6pi',t0:'2pi'}}],
+'2.6':[{n:'Cardioide',v:{fr:'2+2cos(t)',ta:'0',tb:'2pi',t0:'pi/3'}},{n:'Círculo r=2',v:{fr:'2',ta:'0',tb:'2pi',t0:'pi/4'}}],
+'3.1':[{n:'Hélice',v:{fx:'cos(t)',fy:'sin(t)',fz:'t*0.3',ta:'0',tb:'4pi',t0:'pi'}},{n:'Hélice cónica',v:{fx:'(0.3t)*cos(t)',fy:'(0.3t)*sin(t)',fz:'t',ta:'0',tb:'6pi',t0:'pi'}}],
+'3.2':[{n:'sin(t)/t, cos(t), t',v:{fx:'sin(t)/t',fy:'cos(t)',fz:'t',ta:'-3',tb:'3',t0:'0'}}],
+'3.3':[{n:'Hélice',v:{fx:'cos(t)',fy:'sin(t)',fz:'t*0.3',ta:'0',tb:'4pi',t0:'1'}}],
+'3.4':[{n:'Hélice',v:{fx:'cos(t)',fy:'sin(t)',fz:'1',ta:'0',tb:'pi'}}],
+'3.5':[{n:'Hélice',v:{fx:'cos(t)',fy:'sin(t)',fz:'t*0.3',ta:'0',tb:'4pi'}}],
+'3.6':[{n:'Hélice',v:{fx:'cos(t)',fy:'sin(t)',fz:'t*0.3',ta:'0',tb:'4pi',t0:'1'}}],
+'3.7':[{n:'Hélice',v:{fx:'cos(t)',fy:'sin(t)',fz:'t*0.3',ta:'0',tb:'4pi',t0:'1'}},{n:'Círculo',v:{fx:'cos(t)',fy:'sin(t)',fz:'0',ta:'0',tb:'2pi',t0:'pi/2'}}],
+'3.8':[{n:'Escalera de caracol',v:{fx:'2cos(t)',fy:'2sin(t)',fz:'0.5t',ta:'0',tb:'4pi'}},{n:'Hélice cónica',v:{fx:'(0.3t)*cos(t)',fy:'(0.3t)*sin(t)',fz:'t',ta:'0',tb:'6pi'}},{n:'Tiro parabólico',v:{fx:'20t',fy:'0',fz:'20t-4.9t^2',ta:'0',tb:'4.1'}}],
+'4.1':[{n:'Paraboloide x²+y²',v:{ff:'x^2+y^2',x0:'1',y0:'1',xr:'-3,3',yr:'-3,3'}},{n:'Silla x²-y²',v:{ff:'x^2-y^2',x0:'1',y0:'1',xr:'-3,3',yr:'-3,3'}}],
+'4.2':[{n:'Ondas sin(√(x²+y²))',v:{ff:'sin(sqrt(x^2+y^2))',xr:'-6,6',yr:'-6,6'}},{n:'Silla',v:{ff:'x^2-y^2',xr:'-3,3',yr:'-3,3'}},{n:'Paraboloide 4-x²-y²',v:{ff:'4-x^2-y^2',xr:'-2,2',yr:'-2,2'}}],
+'4.3':[{n:'(x*y)/(x²+y²) en (0,0)',v:{ff:'(x*y)/(x^2+y^2)',x0:'0',y0:'0'}}],
+'4.4':[{n:'f=x²y+y³ en (1,1)',v:{ff:'x^2*y+y^3',x0:'1',y0:'1'}}],
+'4.5':[{n:'f=x²y en (2,3), Δx=0.1, Δy=-0.2',v:{ff:'x^2*y',x0:'2',y0:'3',dx:'0.1',dy:'-0.2'}}],
+'4.6':[{n:'f=x²+y², x=cos t, y=sin t',v:{ff:'x^2+y^2',xt:'cos(t)',yt:'sin(t)',t0:'1',FF:'x^2+y^2-25',ix:'3',iy:'4'}}],
+'4.7':[{n:'f=x³y²+sin(xy) en (1,1)',v:{ff:'x^3*y^2+sin(x*y)',x0:'1',y0:'1'}}],
+'4.8':[{n:'f=x²+y² en (1,2), u=(1,1)',v:{ff:'x^2+y^2',x0:'1',y0:'2',ux:'1',uy:'1'}}],
+'4.9':[{n:'f=x³-3x+y²-4y',v:{ff:'x^3-3*x+y^2-4*y',xr:'-3,3',yr:'-1,6'}},{n:'f=x²+y²',v:{ff:'x^2+y^2',xr:'-2,2',yr:'-2,2'}}],
+'5.1':[{n:'f=1 sobre [0,4]×[0,3]',v:{ff:'1',xr:'0,4',yr:'0,3'}},{n:'f=x*y sobre [0,2]×[0,1]',v:{ff:'x*y',xr:'0,2',yr:'0,1'}}],
+'5.2':[{n:'f=xy, y de 0 a x², x de 0 a 2',v:{ff:'x*y',g1:'0',g2:'x^2',xa:'0',xb:'2'}}],
+'5.3':[{n:'f=x+y, x de 0 a √y, y de 0 a 4',v:{ff:'x+y',h1:'0',h2:'sqrt(y)',yc:'0',yd:'4'}}],
+'5.4':[{n:'f=1, cardioide',v:{ff:'1',r1:'0',r2:'2+2cos(t)',ta:'0',tb:'2pi'}}],
+'5.5':[{n:'f=1 sobre [0,2]×[0,3]×[0,1]',v:{ff:'1',xr:'0,2',yr:'0,3',zr:'0,1'}}],
+'5.6':[{n:'Cilíndricas f=1',v:{sysc:'cil',ff:'1',u1:'0,2',u2:'0,2pi',u3:'0,2'}},{n:'Esféricas f=1',v:{sysc:'esf',ff:'1',u1:'0,2',u2:'0,pi',u3:'0,2pi'}}],
+'5.7':[{n:'F=(-y, x) rotación 2D',v:{mode:'2d',P:'-y',Q:'x',xr:'-3,3',yr:'-3,3'}},{n:'F=(x, y, z) 3D',v:{mode:'3d',P:'x',Q:'y',R:'z',xr:'-3,3',yr:'-3,3',zr:'-3,3'}},{n:'F=(-y, x, 0) 3D',v:{mode:'3d',P:'-y',Q:'x',R:'0',xr:'-3,3',yr:'-3,3',zr:'-3,3'}}],
+'5.8':[{n:'F=(-y/2, x/2), C: círculo r=2',v:{P:'-y/2',Q:'x/2',fx:'2cos(t)',fy:'2sin(t)',ta:'0',tb:'2pi'}}],
+'5.9':[{n:'F=(x², xy) en (1,1)',v:{P:'x^2',Q:'x*y',x0:'1',y0:'1'}}],
+'5.10':[{n:'P=-y/2, Q=x/2, r=2',v:{P:'-y/2',Q:'x/2',rr:'2'}}]
+};
+
+function applyExample(tabId,idx){
+  var ex=EXAMPLES[tabId];
+  if(!ex||!ex[idx])return;
+  var v=ex[idx].v;
+  for(var k in v){
+    var el=document.getElementById(k);
+    if(el){el.value=v[k];}
+  }
+  // handle mode for 5.7
+  if(v.mode){
+    var sel=document.getElementById('fvmode');
+    if(sel){sel.value=v.mode;toggleFieldMode();}
+  }
+  go();
+}
+
+/* ================= UNIT 1 ================= */
+var U1=[
+{id:'1.1',name:'1.1 Definición',title:'Definición de un vector y su interpretación geométrica',
+ desc:'Vector A del origen a (ax,ay,az): magnitud, ángulos directores y vector unitario.',
+ form:function(){return VEC('a',[3,2,4])},
+ run:function(){MODE='3d';var A=getVec('a'),m=vlen(A);
+   items3=[{type:'vec3',to:A,label:'A',c:css('--acc2')}];fit3();setHint();
+   var ang=[Math.acos(A[0]/m)*180/Math.PI,Math.acos(A[1]/m)*180/Math.PI,Math.acos(A[2]/m)*180/Math.PI];
+   show(table([['A','('+A.join(', ')+')'],['|A| (magnitud)',num(m)],
+     ['Vector unitario û',vnorm(A).map(function(v){return num(v,4)}).join(', ')],
+     ['Ángulo con eje X',num(ang[0],2)+'°'],['Ángulo con eje Y',num(ang[1],2)+'°'],['Ángulo con eje Z',num(ang[2],2)+'°']]))}},
+
+{id:'1.2',name:'1.2 Álgebra vectorial',title:'Álgebra vectorial y su geometría',
+ desc:'Suma, resta y multiplicación por escalar de dos vectores A y B.',
+ form:function(){return VEC('a',[3,1,2])+VEC('b',[1,3,-1])+
+   '<label>Escalar k (para kA)</label><input type="text" id="kk" value="2">'+
+   '<label>Operación</label><select id="op"><option value="s">A + B</option><option value="r">A − B</option><option value="k">k·A</option></select>'},
+ run:function(){MODE='3d';var A=getVec('a'),B=getVec('b'),k=fv('kk'),op=val('op'),R;
+   if(op==='s')R=vadd(A,B);else if(op==='r')R=vsub(A,B);else R=vscl(A,k);
+   items3=[{type:'vec3',to:A,label:'A',c:css('--acc3')},{type:'vec3',to:B,label:'B',c:css('--acc')},
+     {type:'vec3',to:R,label:'Resultado',c:css('--acc2')}];fit3();setHint();
+   show(table([['A','('+A.join(', ')+')'],['B','('+B.join(', ')+')'],
+     ['Resultado','('+R.map(function(v){return num(v,4)}).join(', ')+')'],['|Resultado|',num(vlen(R))]]))}},
+
+{id:'1.3',name:'1.3 Producto escalar y vectorial',title:'Producto escalar y producto vectorial',
+ desc:'Producto punto, ángulo entre vectores, y producto cruz A×B (perpendicular a ambos).',
+ form:function(){return VEC('a',[2,3,1])+VEC('b',[1,-1,2])},
+ run:function(){MODE='3d';var A=getVec('a'),B=getVec('b'),dot=vdot(A,B),cr=vcross(A,B);
+   var ang=Math.acos(dot/(vlen(A)*vlen(B)))*180/Math.PI;
+   items3=[{type:'vec3',to:A,label:'A',c:css('--acc3')},{type:'vec3',to:B,label:'B',c:css('--acc')},
+     {type:'vec3',to:cr,label:'A×B',c:css('--acc2')}];fit3();setHint();
+   show(table([['A · B (producto escalar)',num(dot)],['Ángulo entre A y B',num(ang,2)+'°'],
+     ['A × B','('+cr.map(function(v){return num(v,4)}).join(', ')+')'],
+     ['|A × B|  (área del paralelogramo)',num(vlen(cr))],
+     ['¿Perpendiculares? (A·B=0)',Math.abs(dot)<1e-6?'Sí':'No']]))}},
+
+{id:'1.4',name:'1.4 Ecuación de la recta',title:'Ecuación de la recta en el espacio',
+ desc:'Recta que pasa por P₀ con dirección D: r(t)=P₀+tD.',
+ form:function(){return '<b>Punto P₀</b>'+VEC('p',[1,0,2])+'<b>Dirección D</b>'+VEC('d',[2,1,-1])},
+ run:function(){MODE='3d';var P0=getVec('p'),D=getVec('d');
+   var pts=[];for(var t=-2;t<=2;t+=0.05)pts.push(vadd(P0,vscl(D,t)));
+   items3=[{type:'curve3',pts:pts,c:css('--acc')},{type:'point3',p:P0,label:'P₀',c:css('--acc2')},
+     {type:'vec3',from:P0,to:vadd(P0,D),label:'D',c:css('--acc3')}];fit3();setHint();
+   show(table([['Ecuación vectorial','r(t) = ('+P0.join(',')+') + t('+D.join(',')+')'],
+     ['Paramétricas','x='+P0[0]+'+'+D[0]+'t,  y='+P0[1]+'+'+D[1]+'t,  z='+P0[2]+'+'+D[2]+'t'],
+     ['Simétricas',(D[0]?'(x−'+P0[0]+')/'+D[0]:'x='+P0[0])+' = '+(D[1]?'(y−'+P0[1]+')/'+D[1]:'y='+P0[1])+' = '+(D[2]?'(z−'+P0[2]+')/'+D[2]:'z='+P0[2])]]))}},
+
+{id:'1.5',name:'1.5 Ecuación del plano',title:'Ecuación del plano en el espacio',
+ desc:'Plano que pasa por P₀ con vector normal N: N·(r−P₀)=0.',
+ form:function(){return '<b>Punto P₀</b>'+VEC('p',[0,0,1])+'<b>Normal N</b>'+VEC('n',[1,1,2])},
+ run:function(){MODE='3d';var P0=getVec('p'),N=getVec('n'),d=vdot(N,P0);
+   var u=vnorm(Math.abs(N[0])<0.9?vcross(N,[1,0,0]):vcross(N,[0,1,0])),v=vnorm(vcross(N,u)),s=2.4;
+   var g=[[vadd(P0,vadd(vscl(u,-s),vscl(v,-s))),vadd(P0,vadd(vscl(u,s),vscl(v,-s))),
+           vadd(P0,vadd(vscl(u,s),vscl(v,s))),vadd(P0,vadd(vscl(u,-s),vscl(v,s)))]];
+   items3=[{type:'plane3',grid:g[0]},{type:'point3',p:P0,label:'P₀',c:css('--acc2')},
+     {type:'vec3',from:P0,to:vadd(P0,N),label:'N',c:css('--acc2')}];fit3();setHint();
+   show(table([['Ecuación','('+N[0]+')(x−'+P0[0]+') + ('+N[1]+')(y−'+P0[1]+') + ('+N[2]+')(z−'+P0[2]+') = 0'],
+     ['Forma general','a·x+b·y+c·z = d, con a,b,c = ('+N.join(',')+') y d = '+num(d)]]))}},
+
+{id:'1.6',name:'1.6 Aplicaciones',title:'Aplicaciones: trabajo y momento de una fuerza',
+ desc:'Trabajo W = F · d (producto escalar) y momento (torque) τ = r × F (producto vectorial).',
+ form:function(){return '<b>Fuerza F</b>'+VEC('f',[4,0,3])+'<b>Desplazamiento d (trabajo) / brazo r (torque)</b>'+VEC('d',[2,3,0])},
+ run:function(){MODE='3d';var F=getVec('f'),D=getVec('d'),W=vdot(F,D),T=vcross(D,F);
+   items3=[{type:'vec3',to:F,label:'F',c:css('--acc2')},{type:'vec3',to:D,label:'r / d',c:css('--acc3')},
+     {type:'vec3',to:T,label:'τ = r×F',c:css('--acc')}];fit3();setHint();
+   show(table([['Trabajo W = F·d',num(W)],['Momento τ = r×F','('+T.map(function(v){return num(v,4)}).join(', ')+')'],
+     ['|τ| (magnitud del momento)',num(vlen(T))]]))}}
+];
+
+/* ================= UNIT 2 ================= */
+var U2=[
+{id:'2.1',name:'2.1 Paramétricas',title:'Ecuaciones paramétricas de algunas curvas planas y su representación gráfica',
+ desc:'Grafica x=x(t), y=y(t) y ubica un punto para un valor de t.',
+ form:function(){return par2('3cos(t)','2sin(t)','0','2pi')+
+   '<label>Punto en t =</label><input type="text" id="t0" value="pi/4">'},
+ run:function(){MODE='2d';var P=getPar2(),t0=fv('t0');var pts=sample2(P.fx,P.fy,P.a,P.b,1200);
+   items=[{type:'curve',pts:pts},{type:'pt',x:P.fx({t:t0}),y:P.fy({t:t0}),label:'t='+num(t0,3)}];fit2();setHint();
+   show(table([['x('+num(t0,3)+')',num(P.fx({t:t0}))],['y('+num(t0,3)+')',num(P.fy({t:t0}))],
+     ['Intervalo','['+num(P.a,3)+' , '+num(P.b,3)+']']]))}},
+
+{id:'2.2',name:'2.2 Derivada',title:'Derivada de una curva en forma paramétrica',
+ desc:'dx/dt, dy/dt, dy/dx = (dy/dt)/(dx/dt) y d²y/dx² en un valor de t.',
+ form:function(){return par2('t^2','t^3-3t','-2.2','2.2')+'<label>Evaluar en t =</label><input type="text" id="t0" value="1">'},
+ run:function(){MODE='2d';var P=getPar2(),t=fv('t0');
+   var xp=d1(P.fx,t),yp=d1(P.fy,t),xpp=d2(P.fx,t),ypp=d2(P.fy,t),m=yp/xp,m2=(ypp*xp-yp*xpp)/(xp*xp*xp);
+   var pts=sample2(P.fx,P.fy,P.a,P.b,1200),x0=P.fx({t:t}),y0=P.fy({t:t}),L=[];
+   for(var i=-1;i<=1;i+=0.05)L.push([x0+i*2,y0+m*i*2]);
+   items=[{type:'curve',pts:pts},{type:'curve',pts:L,c:css('--acc2'),w:1.6,dash:1},{type:'pt',x:x0,y:y0,label:'t='+num(t,3)}];fit2();setHint();
+   show(table([['dx/dt',num(xp)],['dy/dt',num(yp)],['dy/dx (pendiente)',num(m)],['d²y/dx²',num(m2)],
+     ['Concavidad',m2>0?'hacia arriba':m2<0?'hacia abajo':'—']]))}},
+
+{id:'2.3',name:'2.3 Tangentes',title:'Tangentes a una curva',
+ desc:'Recta tangente en t₀ y tangentes horizontales (dy/dt=0) y verticales (dx/dt=0).',
+ form:function(){return par2('t^2-2t','t^3-3t','-2.5','2.5')+'<label>Tangente en t =</label><input type="text" id="t0" value="0.5">'},
+ run:function(){MODE='2d';var P=getPar2(),t=fv('t0'),xp=d1(P.fx,t),yp=d1(P.fy,t),m=yp/xp,x0=P.fx({t:t}),y0=P.fy({t:t});
+   var pts=sample2(P.fx,P.fy,P.a,P.b,1200),sp=Math.max(Math.abs(x0),1)*1.5,L=[],i;
+   if(isFinite(m)&&Math.abs(m)<1e6){for(i=-1;i<=1;i+=0.02)L.push([x0+i*sp,y0+m*i*sp])}else{for(i=-1;i<=1;i+=0.02)L.push([x0,y0+i*sp])}
+   var HT=roots(function(u){return d1(P.fy,u)},P.a,P.b,600),VT=roots(function(u){return d1(P.fx,u)},P.a,P.b,600);
+   items=[{type:'curve',pts:pts},{type:'curve',pts:L,c:css('--acc2'),w:1.6,dash:1},{type:'pt',x:x0,y:y0}];
+   for(i=0;i<HT.length;i++)items.push({type:'pt',x:P.fx({t:HT[i]}),y:P.fy({t:HT[i]}),c:'#3b82f6',r:4});
+   for(i=0;i<VT.length;i++)items.push({type:'pt',x:P.fx({t:VT[i]}),y:P.fy({t:VT[i]}),c:'#a855f7',r:4});
+   fit2();setHint();
+   function lst(A){if(!A.length)return 'ninguna';var s='',j;for(j=0;j<A.length;j++)s+=(j?'<br>':'')+'t='+num(A[j],4);return s}
+   show(table([['Pendiente en t₀',isFinite(m)?num(m):'vertical'],
+     ['Tangentes horizontales <span style="color:#3b82f6">●</span>',lst(HT)],
+     ['Tangentes verticales <span style="color:#a855f7">●</span>',lst(VT)]]))}},
+
+{id:'2.4',name:'2.4 Área y longitud',title:'Área y longitud de arco',
+ desc:'L=∫√(x′²+y′²)dt · A=∫y·x′dt · Superficie de revolución S=2π∫y√(x′²+y′²)dt.',
+ form:function(){return par2('t-sin(t)','1-cos(t)','0','2pi')},
+ run:function(){MODE='2d';var P=getPar2(),ds=function(t){var a=d1(P.fx,t),b=d1(P.fy,t);return Math.sqrt(a*a+b*b)};
+   var L=simpson(ds,P.a,P.b,2000),A=simpson(function(t){return P.fy({t:t})*d1(P.fx,t)},P.a,P.b,2000);
+   var S=simpson(function(t){return 2*Math.PI*Math.abs(P.fy({t:t}))*ds(t)},P.a,P.b,2000);
+   var pts=sample2(P.fx,P.fy,P.a,P.b,1200),fp=pts.slice();fp.push([pts[pts.length-1][0],0]);fp.push([pts[0][0],0]);
+   items=[{type:'fill',pts:fp},{type:'curve',pts:pts}];fit2();setHint();
+   show(table([['Longitud de arco L',num(L)],['Área ∫y·x′dt',num(A)],['Superficie de revolución (eje x)',num(S)]]))}},
+
+{id:'2.5',name:'2.5 Polares',title:'Curvas planas en coordenadas polares',
+ desc:'Grafica r=f(θ). Escribe θ como t.',
+ form:function(){return '<label>r(t), con t=θ</label><input type="text" id="fr" value="2+2cos(t)">'+
+   '<div class="row"><div><label>θ inicial</label><input type="text" id="ta" value="0"></div>'+
+   '<div><label>θ final</label><input type="text" id="tb" value="2pi"></div></div>'+
+   '<label>Punto en θ=</label><input type="text" id="t0" value="pi/3">'},
+ run:function(){MODE='2d';var fr=compile(val('fr')),a=fv('ta'),b=fv('tb'),t0=fv('t0'),pts=[],i;
+   for(i=0;i<=1600;i++){var t=a+(b-a)*i/1600,r=fr({t:t});pts.push([r*Math.cos(t),r*Math.sin(t)])}
+   var r0=fr({t:t0});items=[{type:'curve',pts:pts},{type:'pt',x:r0*Math.cos(t0),y:r0*Math.sin(t0),label:'θ='+num(t0,3)}];fit2();setHint();
+   show(table([['r(θ₀)',num(r0)],['x=r cosθ',num(r0*Math.cos(t0))],['y=r sinθ',num(r0*Math.sin(t0))]]))}},
+
+{id:'2.6',name:'2.6 Cálculo polar',title:'Cálculo en coordenadas polares',
+ desc:'A=½∫r²dθ · L=∫√(r²+r′²)dθ · pendiente dy/dx.',
+ form:function(){return '<label>r(t), con t=θ</label><input type="text" id="fr" value="2+2cos(t)">'+
+   '<div class="row"><div><label>θ inicial</label><input type="text" id="ta" value="0"></div>'+
+   '<div><label>θ final</label><input type="text" id="tb" value="2pi"></div></div>'+
+   '<label>Tangente en θ=</label><input type="text" id="t0" value="pi/3">'},
+ run:function(){MODE='2d';var fr=compile(val('fr')),a=fv('ta'),b=fv('tb'),t0=fv('t0');
+   var A=0.5*simpson(function(t){var r=fr({t:t});return r*r},a,b,2000);
+   var L=simpson(function(t){var r=fr({t:t}),rp=d1(fr,t);return Math.sqrt(r*r+rp*rp)},a,b,2000);
+   var r=fr({t:t0}),rp=d1(fr,t0),m=(rp*Math.sin(t0)+r*Math.cos(t0))/(rp*Math.cos(t0)-r*Math.sin(t0));
+   var x0=r*Math.cos(t0),y0=r*Math.sin(t0),pts=[],i;
+   for(i=0;i<=1600;i++){var t=a+(b-a)*i/1600,rr=fr({t:t});pts.push([rr*Math.cos(t),rr*Math.sin(t)])}
+   var fp=pts.slice();fp.push([0,0]);
+   items=[{type:'fill',pts:fp},{type:'curve',pts:pts},{type:'pt',x:x0,y:y0}];fit2();setHint();
+   show(table([['Área ½∫r²dθ',num(A)],['Longitud de arco L',num(L)],['dy/dx en θ₀',isFinite(m)?num(m):'vertical']]))}}
+];
+
+/* ================= UNIT 3 ================= */
+var U3=[
+{id:'3.1',name:'3.1 Definición',title:'Definición de función vectorial de una variable real',
+ desc:'r(t)=(x(t),y(t),z(t)). Grafica la curva en el espacio y un punto en t₀.',
+ form:function(){return par3('cos(t)','sin(t)','t*0.3','0','4pi')+'<label>Punto en t=</label><input type="text" id="t0" value="pi">'},
+ run:function(){MODE='3d';var P=getPar3(),t0=fv('t0'),pts=sampleR(P,600);
+   items3=[{type:'curve3',pts:pts},{type:'point3',p:[P.fx({t:t0}),P.fy({t:t0}),P.fz({t:t0})],label:'t='+num(t0,3),c:css('--acc2')}];fit3();setHint();
+   show(table([['x(t₀)',num(P.fx({t:t0}))],['y(t₀)',num(P.fy({t:t0}))],['z(t₀)',num(P.fz({t:t0}))]]))}},
+
+{id:'3.2',name:'3.2 Límite y continuidad',title:'Límites y continuidad de una función vectorial',
+ desc:'Aproxima r(t) cuando t→t₀ desde ambos lados, y compara con r(t₀) para ver si es continua.',
+ form:function(){return par3('sin(t)/t','cos(t)','t','-3','3')+'<label>t → </label><input type="text" id="t0" value="0">'},
+ run:function(){MODE='3d';var P=getPar3(),t0=fv('t0'),pts=sampleR(P,600),hs=[0.5,0.1,0.01,0.001],rows=[],i;
+   for(i=0;i<hs.length;i++){var h=hs[i];
+     rows.push(['t₀−'+h,'('+num(P.fx({t:t0-h}),4)+', '+num(P.fy({t:t0-h}),4)+', '+num(P.fz({t:t0-h}),4)+')']);
+     rows.push(['t₀+'+h,'('+num(P.fx({t:t0+h}),4)+', '+num(P.fy({t:t0+h}),4)+', '+num(P.fz({t:t0+h}),4)+')']);}
+   var atP;try{atP=[P.fx({t:t0}),P.fy({t:t0}),P.fz({t:t0})]}catch(e){atP=[NaN,NaN,NaN]}
+   items3=[{type:'curve3',pts:pts},{type:'point3',p:isFinite(atP[0])?atP:pts[Math.round(pts.length/2)],label:'t₀',c:css('--acc2')}];fit3();setHint();
+   rows.push(['r(t₀) definido','('+atP.map(function(v){return num(v,4)}).join(', ')+')']);
+   rows.push(['¿Continua en t₀?',(isFinite(atP[0])?'los límites laterales deben coincidir con r(t₀) arriba':'r(t₀) no está definido → discontinua')]);
+   show(table(rows))}},
+
+{id:'3.3',name:'3.3 Derivada',title:'Derivada de una función vectorial',
+ desc:'r′(t₀) = (x′,y′,z′): vector tangente a la curva en el punto.',
+ form:function(){return par3('cos(t)','sin(t)','t*0.3','0','4pi')+'<label>Evaluar en t=</label><input type="text" id="t0" value="1">'},
+ run:function(){MODE='3d';var P=getPar3(),t=fv('t0'),pts=sampleR(P,600);
+   var p0=[P.fx({t:t}),P.fy({t:t}),P.fz({t:t})],rp=[d1(P.fx,t),d1(P.fy,t),d1(P.fz,t)];
+   items3=[{type:'curve3',pts:pts},{type:'point3',p:p0,c:css('--acc2')},{type:'vec3',from:p0,to:vadd(p0,rp),label:"r'(t₀)",c:css('--acc2')}];fit3();setHint();
+   show(table([["r'(t₀)",'('+rp.map(function(v){return num(v,4)}).join(', ')+')'],["|r'(t₀)| (rapidez)",num(vlen(rp))]]))}},
+
+{id:'3.4',name:'3.4 Integración',title:'Integración de funciones vectoriales',
+ desc:'∫ r(t) dt de a a b, componente a componente (desplazamiento neto del vector).',
+ form:function(){return par3('cos(t)','sin(t)','1','0','pi')},
+ run:function(){MODE='3d';var P=getPar3(),pts=sampleR(P,600);
+   var Ix=simpson(function(t){return P.fx({t:t})},P.a,P.b,1000),
+       Iy=simpson(function(t){return P.fy({t:t})},P.a,P.b,1000),
+       Iz=simpson(function(t){return P.fz({t:t})},P.a,P.b,1000);
+   items3=[{type:'curve3',pts:pts},{type:'vec3',to:[Ix,Iy,Iz],label:'∫r dt',c:css('--acc2')}];fit3();setHint();
+   show(table([['∫x(t)dt',num(Ix)],['∫y(t)dt',num(Iy)],['∫z(t)dt',num(Iz)],
+     ['Vector integral','('+num(Ix)+', '+num(Iy)+', '+num(Iz)+')']]))}},
+
+{id:'3.5',name:'3.5 Longitud de arco',title:'Longitud de arco de una curva en el espacio',
+ desc:'L = ∫ |r′(t)| dt de a a b.',
+ form:function(){return par3('cos(t)','sin(t)','t*0.3','0','4pi')},
+ run:function(){MODE='3d';var P=getPar3(),pts=sampleR(P,600);
+   var L=simpson(function(t){var a=d1(P.fx,t),b=d1(P.fy,t),c=d1(P.fz,t);return Math.sqrt(a*a+b*b+c*c)},P.a,P.b,2000);
+   items3=[{type:'curve3',pts:pts}];fit3();setHint();
+   show(table([['Longitud de arco L',num(L)],['Intervalo','['+num(P.a,3)+', '+num(P.b,3)+']']]))}},
+
+{id:'3.6',name:'3.6 T, N, B',title:'Vectores tangente, normal y binormal',
+ desc:'T=r′/|r′| (tangente unitario), N=T′/|T′| (normal), B=T×N (binormal).',
+ form:function(){return par3('cos(t)','sin(t)','t*0.3','0','4pi')+'<label>Evaluar en t=</label><input type="text" id="t0" value="1">'},
+ run:function(){MODE='3d';var P=getPar3(),t=fv('t0'),pts=sampleR(P,600),p0=[P.fx({t:t}),P.fy({t:t}),P.fz({t:t})];
+   var rp=[d1(P.fx,t),d1(P.fy,t),d1(P.fz,t)],T=vnorm(rp);
+   function Tf(u){return vnorm([d1(P.fx,u),d1(P.fy,u),d1(P.fz,u)])}
+   var Tp=[(Tf(t+H)[0]-Tf(t-H)[0])/(2*H),(Tf(t+H)[1]-Tf(t-H)[1])/(2*H),(Tf(t+H)[2]-Tf(t-H)[2])/(2*H)];
+   var N=vnorm(Tp),B=vcross(T,N);
+   items3=[{type:'curve3',pts:pts},{type:'point3',p:p0,c:css('--acc2')},
+     {type:'vec3',from:p0,to:vadd(p0,T),label:'T',c:css('--acc2')},
+     {type:'vec3',from:p0,to:vadd(p0,N),label:'N',c:css('--acc3')},
+     {type:'vec3',from:p0,to:vadd(p0,B),label:'B',c:css('--acc')}];fit3();setHint();
+   show(table([['T (tangente unitario)','('+T.map(function(v){return num(v,4)}).join(', ')+')'],
+     ['N (normal principal)','('+N.map(function(v){return num(v,4)}).join(', ')+')'],
+     ['B (binormal)','('+B.map(function(v){return num(v,4)}).join(', ')+')']]))}},
+
+{id:'3.7',name:'3.7 Curvatura',title:'Curvatura de una curva en el espacio',
+ desc:'κ = |r′ × r″| / |r′|³. El radio de curvatura es 1/κ.',
+ form:function(){return par3('cos(t)','sin(t)','t*0.3','0','4pi')+'<label>Evaluar en t=</label><input type="text" id="t0" value="1">'},
+ run:function(){MODE='3d';var P=getPar3(),t=fv('t0'),pts=sampleR(P,600),p0=[P.fx({t:t}),P.fy({t:t}),P.fz({t:t})];
+   function rpf(u){return [d1(P.fx,u),d1(P.fy,u),d1(P.fz,u)]}
+   var rp=rpf(t),rpp=[(rpf(t+H)[0]-rpf(t-H)[0])/(2*H),(rpf(t+H)[1]-rpf(t-H)[1])/(2*H),(rpf(t+H)[2]-rpf(t-H)[2])/(2*H)];
+   var cr=vcross(rp,rpp),kappa=vlen(cr)/Math.pow(vlen(rp),3);
+   items3=[{type:'curve3',pts:pts},{type:'point3',p:p0,c:css('--acc2')}];fit3();setHint();
+   show(table([['Curvatura κ',num(kappa)],['Radio de curvatura 1/κ',kappa>1e-9?num(1/kappa):'∞ (recta)']]))}},
+
+{id:'3.8',name:'3.8 Aplicaciones',title:'Aplicaciones: modelos físicos con funciones vectoriales',
+ desc:'Ejemplos clásicos: escalera de caracol, hélice cónica y trayectoria de proyectil.',
+ form:function(){return par3('2cos(t)','2sin(t)','0.5t','0','4pi')},
+ run:function(){MODE='3d';var P=getPar3(),pts=sampleR(P,700);items3=[{type:'curve3',pts:pts}];fit3();setHint();
+   var L=simpson(function(t){var a=d1(P.fx,t),b=d1(P.fy,t),c=d1(P.fz,t);return Math.sqrt(a*a+b*b+c*c)},P.a,P.b,2000);
+   show(table([['Longitud total de la trayectoria',num(L)]]))}}
+];
+
+/* ================= UNIT 4 ================= */
+function surf(f,xa,xb,ya,yb,n){n=n||34;var g=[],i,j;
+  for(i=0;i<=n;i++){var row=[];for(j=0;j<=n;j++){var x=xa+(xb-xa)*i/n,y=ya+(yb-ya)*j/n,z;
+    try{z=f({x:x,y:y})}catch(e){z=NaN}row.push([x,y,z])}g.push(row)}return g}
+var U4=[
+{id:'4.1',name:'4.1 Definición',title:'Definición de una función de varias variables',
+ desc:'Evalúa f(x,y) en un punto y muestra su superficie.',
+ form:function(){return '<label>f(x,y)</label><input type="text" id="ff" value="x^2+y^2">'+
+   '<div class="row3"><div><label>x₀</label><input type="text" id="x0" value="1"></div><div><label>y₀</label><input type="text" id="y0" value="1"></div></div>'+
+   '<div class="row"><div><label>Dominio x</label><input type="text" id="xr" value="-3,3"></div><div><label>Dominio y</label><input type="text" id="yr" value="-3,3"></div></div>'},
+ run:function(){MODE='3d';var f=compile(val('ff')),x0=fv('x0'),y0=fv('y0'),xr=val('xr').split(','),yr=val('yr').split(',');
+   var g=surf(f,+xr[0],+xr[1],+yr[0],+yr[1]);var z0=f({x:x0,y:y0});
+   items3=[{type:'surface',grid:g},{type:'point3',p:[x0,y0,z0],label:'(x₀,y₀,z₀)',c:css('--acc2')}];fit3();setHint();
+   show(table([['f(x₀,y₀)',num(z0)],['Punto','('+num(x0)+', '+num(y0)+', '+num(z0)+')']]))}},
+
+{id:'4.2',name:'4.2 Gráfica y curvas de nivel',title:'Gráfica de una función de dos variables. Curvas y superficies de nivel',
+ desc:'Superficie z=f(x,y), coloreada por altura.',
+ form:function(){return '<label>f(x,y)</label><input type="text" id="ff" value="sin(sqrt(x^2+y^2))">'+
+   '<div class="row"><div><label>Dominio x</label><input type="text" id="xr" value="-6,6"></div><div><label>Dominio y</label><input type="text" id="yr" value="-6,6"></div></div>'},
+ run:function(){MODE='3d';var f=compile(val('ff')),xr=val('xr').split(','),yr=val('yr').split(',');
+   var g=surf(f,+xr[0],+xr[1],+yr[0],+yr[1],40);
+   var zs=[];for(var i=0;i<g.length;i++)for(var j=0;j<g[0].length;j++)if(isFinite(g[i][j][2]))zs.push(g[i][j][2]);
+   var zmin=Math.min.apply(null,zs),zmax=Math.max.apply(null,zs);
+   items3=[{type:'surface',grid:g}];fit3();setHint();
+   show(table([['z mínimo en el dominio',num(zmin)],['z máximo en el dominio',num(zmax)],
+     ['Curva de nivel z=c','se obtiene cortando la superficie con el plano horizontal z=c']]))}},
+
+{id:'4.3',name:'4.3 Límite y continuidad',title:'Límite y continuidad de una función de varias variables',
+ desc:'Aproxima f(x,y) hacia (x₀,y₀) siguiendo distintas trayectorias.',
+ form:function(){return '<label>f(x,y)</label><input type="text" id="ff" value="(x*y)/(x^2+y^2)">'+
+   '<div class="row3"><div><label>x₀</label><input type="text" id="x0" value="0"></div><div><label>y₀</label><input type="text" id="y0" value="0"></div></div>'},
+ run:function(){MODE='3d';var f=compile(val('ff')),x0=fv('x0'),y0=fv('y0');
+   var g=surf(f,x0-3,x0+3,y0-3,y0+3);items3=[{type:'surface',grid:g},{type:'point3',p:[x0,y0,0],c:css('--acc2')}];fit3();setHint();
+   var hs=[0.1,0.01,0.001],rows=[],paths=[['y=x',function(h){return f({x:x0+h,y:y0+h})}],
+     ['y=−x',function(h){return f({x:x0+h,y:y0-h})}],['y=0',function(h){return f({x:x0+h,y:y0})}],
+     ['y=x²',function(h){return f({x:x0+h,y:y0+h*h})}]];
+   for(var i=0;i<paths.length;i++){var s='';for(var j=0;j<hs.length;j++)s+=(j?', ':'')+num(paths[i][1](hs[j]),4);
+     rows.push(['Por '+paths[i][0]+' (h→0)',s])}
+   rows.push(['Conclusión','si los valores no coinciden entre trayectorias, el límite no existe']);
+   show(table(rows))}},
+
+{id:'4.4',name:'4.4 Derivadas parciales',title:'Derivadas parciales',
+ desc:'∂f/∂x y ∂f/∂y en (x₀,y₀): pendientes de las trazas de la superficie.',
+ form:function(){return '<label>f(x,y)</label><input type="text" id="ff" value="x^2*y+y^3">'+
+   '<div class="row3"><div><label>x₀</label><input type="text" id="x0" value="1"></div><div><label>y₀</label><input type="text" id="y0" value="1"></div></div>'},
+ run:function(){MODE='3d';var f=compile(val('ff')),x0=fv('x0'),y0=fv('y0'),fx=pdx(f,x0,y0),fy=pdy(f,x0,y0),z0=f({x:x0,y:y0});
+   var g=surf(f,x0-3,x0+3,y0-3,y0+3);
+   var Tx=[],Ty=[],i;for(i=-1.5;i<=1.5;i+=0.1){Tx.push([x0+i,y0,z0+fx*i]);Ty.push([x0,y0+i,z0+fy*i])}
+   items3=[{type:'surface',grid:g},{type:'point3',p:[x0,y0,z0],c:css('--acc2')},
+     {type:'curve3',pts:Tx,c:css('--acc2'),w:2.4},{type:'curve3',pts:Ty,c:css('--acc3'),w:2.4}];fit3();setHint();
+   show(table([['∂f/∂x (traza roja, y fijo)',num(fx)],['∂f/∂y (traza azul, x fijo)',num(fy)],['f(x₀,y₀)',num(z0)]]))}},
+
+{id:'4.5',name:'4.5 Incrementos y diferenciales',title:'Incrementos y diferenciales',
+ desc:'Δz exacto vs dz (diferencial, aproximación lineal).',
+ form:function(){return '<label>f(x,y)</label><input type="text" id="ff" value="x^2*y">'+
+   '<div class="row3"><div><label>x₀</label><input type="text" id="x0" value="2"></div><div><label>y₀</label><input type="text" id="y0" value="3"></div></div>'+
+   '<div class="row3"><div><label>Δx</label><input type="text" id="dx" value="0.1"></div><div><label>Δy</label><input type="text" id="dy" value="-0.2"></div></div>'},
+ run:function(){MODE='3d';var f=compile(val('ff')),x0=fv('x0'),y0=fv('y0'),dx=fv('dx'),dy=fv('dy');
+   var z0=f({x:x0,y:y0}),z1=f({x:x0+dx,y:y0+dy}),dz=pdx(f,x0,y0)*dx+pdy(f,x0,y0)*dy,Dz=z1-z0;
+   var g=surf(f,x0-3,x0+3,y0-3,y0+3);
+   items3=[{type:'surface',grid:g},{type:'point3',p:[x0,y0,z0],c:css('--acc2')},{type:'point3',p:[x0+dx,y0+dy,z1],c:css('--acc3')}];fit3();setHint();
+   show(table([['Δz exacto',num(Dz)],['dz (diferencial)',num(dz)],
+     ['Error |Δz−dz|',num(Math.abs(Dz-dz))],['Aprox. lineal',num(z0+dz)]]))}},
+
+{id:'4.6',name:'4.6 Regla de la cadena / implícita',title:'Regla de la cadena y derivada implícita',
+ desc:'dz/dt vía regla de la cadena; y dy/dx implícita para F(x,y)=0.',
+ form:function(){return '<b>Regla de la cadena</b><label>f(x,y)</label><input type="text" id="ff" value="x^2+y^2">'+
+   '<label>x(t)</label><input type="text" id="xt" value="cos(t)"><label>y(t)</label><input type="text" id="yt" value="sin(t)">'+
+   '<label>t₀</label><input type="text" id="t0" value="1">'+
+   '<b>Derivada implícita F(x,y)=0</b><label>F(x,y)</label><input type="text" id="FF" value="x^2+y^2-25">'+
+   '<div class="row3"><div><label>x₀</label><input type="text" id="ix" value="3"></div><div><label>y₀</label><input type="text" id="iy" value="4"></div></div>'},
+ run:function(){MODE='2d';var f=compile(val('ff')),xt=compile(val('xt')),yt=compile(val('yt')),t0=fv('t0');
+   var x0=xt({t:t0}),y0=yt({t:t0}),dzdt=pdx(f,x0,y0)*d1(xt,t0)+pdy(f,x0,y0)*d1(yt,t0);
+   var num_g=function(u){return f({x:xt({t:u}),y:yt({t:u})})},dzdt_dir=d1(num_g,t0);
+   var F=compile(val('FF')),ix=fv('ix'),iy=fv('iy'),dydx=-pdx(F,ix,iy)/pdy(F,ix,iy);
+   var pts=[];for(var t=0;t<=6.29;t+=0.02)pts.push([xt({t:t}),yt({t:t})]);
+   items=[{type:'curve',pts:pts},{type:'pt',x:x0,y:y0,label:'t₀'}];fit2();setHint();
+   show(table([['dz/dt (regla de la cadena)',num(dzdt)],['dz/dt (verificación numérica)',num(dzdt_dir)],
+     ['—','—'],['dy/dx implícita en ('+ix+','+iy+')',num(dydx)]]))}},
+
+{id:'4.7',name:'4.7 Derivadas de orden superior',title:'Derivadas parciales de orden superior',
+ desc:'fxx, fyy, fxy, fyx en un punto (Teorema de Schwarz: fxy=fyx).',
+ form:function(){return '<label>f(x,y)</label><input type="text" id="ff" value="x^3*y^2+sin(x*y)">'+
+   '<div class="row3"><div><label>x₀</label><input type="text" id="x0" value="1"></div><div><label>y₀</label><input type="text" id="y0" value="1"></div></div>'},
+ run:function(){MODE='3d';var f=compile(val('ff')),x0=fv('x0'),y0=fv('y0');
+   var fxx=pdxx(f,x0,y0),fyy=pdyy(f,x0,y0),fxy=pdxy(f,x0,y0),fyx=(pdx(f,x0,y0+H)-pdx(f,x0,y0-H))/(2*H);
+   var g=surf(f,x0-3,x0+3,y0-3,y0+3);items3=[{type:'surface',grid:g},{type:'point3',p:[x0,y0,f({x:x0,y:y0})],c:css('--acc2')}];fit3();setHint();
+   show(table([['fxx',num(fxx)],['fyy',num(fyy)],['fxy',num(fxy)],['fyx',num(fyx)],
+     ['¿fxy≈fyx? (Schwarz)',Math.abs(fxy-fyx)<1e-3?'Sí':'No']]))}},
+
+{id:'4.8',name:'4.8 Direccional y gradiente',title:'Derivada direccional y gradiente',
+ desc:'∇f=(fx,fy). Derivada direccional D_u f = ∇f·û en dirección u.',
+ form:function(){return '<label>f(x,y)</label><input type="text" id="ff" value="x^2+y^2">'+
+   '<div class="row3"><div><label>x₀</label><input type="text" id="x0" value="1"></div><div><label>y₀</label><input type="text" id="y0" value="2"></div></div>'+
+   '<div class="row3"><div><label>ux</label><input type="text" id="ux" value="1"></div><div><label>uy</label><input type="text" id="uy" value="1"></div></div>'},
+ run:function(){MODE='2d';var f=compile(val('ff')),x0=fv('x0'),y0=fv('y0'),ux=fv('ux'),uy=fv('uy');
+   var fx=pdx(f,x0,y0),fy=pdy(f,x0,y0),ul=Math.sqrt(ux*ux+uy*uy),uhx=ux/ul,uhy=uy/ul,Du=fx*uhx+fy*uhy;
+   items=[{type:'pt',x:x0,y:y0},{type:'vec2',to:[x0+fx,y0+fy],from:[x0,y0],label:'∇f',c:css('--acc2')},
+     {type:'vec2',to:[x0+uhx,y0+uhy],from:[x0,y0],label:'û',c:css('--acc3')}];fit2();setHint();
+   show(table([['∇f = (fx,fy)','('+num(fx)+', '+num(fy)+')'],['|∇f| (máx. crecimiento)',num(Math.sqrt(fx*fx+fy*fy))],
+     ['û (dirección unitaria)','('+num(uhx,4)+', '+num(uhy,4)+')'],['Derivada direccional D_u f',num(Du)]]))}},
+
+{id:'4.9',name:'4.9 Valores extremos',title:'Valores extremos de funciones de varias variables',
+ desc:'Búsqueda de puntos críticos (∇f≈0) y clasificación con el criterio de la segunda derivada.',
+ form:function(){return '<label>f(x,y)</label><input type="text" id="ff" value="x^3-3*x+y^2-4*y">'+
+   '<div class="row"><div><label>Dominio x</label><input type="text" id="xr" value="-3,3"></div><div><label>Dominio y</label><input type="text" id="yr" value="-1,6"></div></div>'},
+ run:function(){MODE='3d';var f=compile(val('ff')),xr=val('xr').split(','),yr=val('yr').split(',');
+   var xa=+xr[0],xb=+xr[1],ya=+yr[0],yb=+yr[1],n=44,best=[],i,j;
+   for(i=1;i<n;i++)for(j=1;j<n;j++){var x=xa+(xb-xa)*i/n,y=ya+(yb-ya)*j/n,gx=pdx(f,x,y),gy=pdy(f,x,y),gm=Math.sqrt(gx*gx+gy*gy);
+     if(gm<0.35)best.push([x,y,gm])}
+   best.sort(function(a,b){return a[2]-b[2]});
+   var found=[],k;for(k=0;k<best.length&&found.length<6;k++){var dup=false;
+     for(var m=0;m<found.length;m++)if(Math.hypot(found[m][0]-best[k][0],found[m][1]-best[k][1])<(xb-xa)/n*3)dup=true;
+     if(!dup)found.push(best[k]);}
+   var g=surf(f,xa,xb,ya,yb);items3=[{type:'surface',grid:g}];
+   var rows=[];
+   for(k=0;k<found.length;k++){var x0=found[k][0],y0=found[k][1],fxx=pdxx(f,x0,y0),fyy=pdyy(f,x0,y0),fxy=pdxy(f,x0,y0);
+     var D=fxx*fyy-fxy*fxy,cls=D>0?(fxx>0?'mínimo local':'máximo local'):(D<0?'punto silla':'no concluyente');
+     var z0=f({x:x0,y:y0});items3.push({type:'point3',p:[x0,y0,z0],label:cls,c:css('--acc2')});
+     rows.push(['Punto crítico ≈ ('+num(x0,3)+', '+num(y0,3)+')','z='+num(z0,3)+' — '+cls]);}
+   if(!rows.length)rows.push(['Sin puntos críticos claros','prueba ampliar el dominio']);
+   fit3();setHint();show(table(rows))}}
+];
+
+/* ================= UNIT 5 ================= */
+var U5=[
+{id:'5.1',name:'5.1 Área e integral doble',title:'Cálculo de áreas e integrales dobles',
+ desc:'Sobre un rectángulo [xa,xb]×[ya,yb]: área = ∬1 dA, y ∬f dA.',
+ form:function(){return '<label>f(x,y)</label><input type="text" id="ff" value="1">'+
+   '<div class="row"><div><label>x: a,b</label><input type="text" id="xr" value="0,4"></div><div><label>y: a,b</label><input type="text" id="yr" value="0,3"></div></div>'},
+ run:function(){MODE='2d';var f=compile(val('ff')),xr=val('xr').split(','),yr=val('yr').split(',');
+   var xa=+xr[0],xb=+xr[1],ya=+yr[0],yb=+yr[1];
+   var area=dbl(function(x,y){return 1},xa,xb,ya,yb,60),I=dbl(function(x,y){return f({x:x,y:y})},xa,xb,ya,yb,60);
+   items=[{type:'fill',pts:[[xa,ya],[xb,ya],[xb,yb],[xa,yb]]},{type:'curve',pts:[[xa,ya],[xb,ya],[xb,yb],[xa,yb],[xa,ya]]}];fit2();setHint();
+   show(table([['Área de la región',num(area)],['∬ f(x,y) dA',num(I)]]))}},
+
+{id:'5.2',name:'5.2 Integrales iteradas',title:'Integrales iteradas (región tipo I)',
+ desc:'∬f dA = ∫ₐᵇ ∫_{g1(x)}^{g2(x)} f(x,y) dy dx.',
+ form:function(){return '<label>f(x,y)</label><input type="text" id="ff" value="x*y">'+
+   '<label>g1(x) (límite inferior de y)</label><input type="text" id="g1" value="0">'+
+   '<label>g2(x) (límite superior de y)</label><input type="text" id="g2" value="x^2">'+
+   '<div class="row"><div><label>x: a</label><input type="text" id="xa" value="0"></div><div><label>x: b</label><input type="text" id="xb" value="2"></div></div>'},
+ run:function(){MODE='2d';var f=compile(val('ff')),g1=compile(val('g1')),g2=compile(val('g2')),xa=fv('xa'),xb=fv('xb');
+   var I=simpson(function(x){return simpson(function(y){return f({x:x,y:y})},g1({x:x}),g2({x:x}),120)},xa,xb,200);
+   var pu=[],pd=[],i;for(i=0;i<=80;i++){var x=xa+(xb-xa)*i/80;pu.push([x,g2({x:x})])}
+   for(i=80;i>=0;i--){var x=xa+(xb-xa)*i/80;pd.push([x,g1({x:x})])}
+   items=[{type:'fill',pts:pu.concat(pd)},{type:'curve',pts:pu},{type:'curve',pts:pd}];fit2();setHint();
+   show(table([['∬ f dA (iterada, dy dx)',num(I)]]))}},
+
+{id:'5.3',name:'5.3 Integral doble rectangular',title:'Integral doble en coordenadas rectangulares (región tipo II)',
+ desc:'∬f dA = ∫_c^d ∫_{h1(y)}^{h2(y)} f(x,y) dx dy.',
+ form:function(){return '<label>f(x,y)</label><input type="text" id="ff" value="x+y">'+
+   '<label>h1(y) (límite inferior de x)</label><input type="text" id="h1" value="0">'+
+   '<label>h2(y) (límite superior de x)</label><input type="text" id="h2" value="sqrt(y)">'+
+   '<div class="row"><div><label>y: c</label><input type="text" id="yc" value="0"></div><div><label>y: d</label><input type="text" id="yd" value="4"></div></div>'},
+ run:function(){MODE='2d';var f=compile(val('ff')),h1=compile(val('h1')),h2=compile(val('h2')),yc=fv('yc'),yd=fv('yd');
+   var I=simpson(function(y){return simpson(function(x){return f({x:x,y:y})},h1({y:y}),h2({y:y}),120)},yc,yd,200);
+   var pr=[],pl=[],i;for(i=0;i<=80;i++){var y=yc+(yd-yc)*i/80;pr.push([h2({y:y}),y])}
+   for(i=80;i>=0;i--){var y=yc+(yd-yc)*i/80;pl.push([h1({y:y}),y])}
+   items=[{type:'fill',pts:pr.concat(pl)},{type:'curve',pts:pr},{type:'curve',pts:pl}];fit2();setHint();
+   show(table([['∬ f dA (iterada, dx dy)',num(I)]]))}},
+
+{id:'5.4',name:'5.4 Integral doble polar',title:'Integral doble en coordenadas polares',
+ desc:'∬f dA = ∫_α^β ∫_{r1(θ)}^{r2(θ)} f·r dr dθ.',
+ form:function(){return '<label>f(x,y) en cartesianas</label><input type="text" id="ff" value="1">'+
+   '<label>r1(θ)</label><input type="text" id="r1" value="0"><label>r2(θ)</label><input type="text" id="r2" value="2+2cos(t)">'+
+   '<div class="row"><div><label>θ: α</label><input type="text" id="ta" value="0"></div><div><label>θ: β</label><input type="text" id="tb" value="2pi"></div></div>'},
+ run:function(){MODE='2d';var f=compile(val('ff')),r1=compile(val('r1')),r2=compile(val('r2')),a=fv('ta'),b=fv('tb');
+   var I=simpson(function(t){return simpson(function(r){return f({x:r*Math.cos(t),y:r*Math.sin(t)})*r},r1({t:t}),r2({t:t}),80)},a,b,300);
+   var pts=[],i;for(i=0;i<=800;i++){var t=a+(b-a)*i/800,r=r2({t:t});pts.push([r*Math.cos(t),r*Math.sin(t)])}
+   var fp=pts.slice();fp.push([0,0]);
+   items=[{type:'fill',pts:fp},{type:'curve',pts:pts}];fit2();setHint();
+   show(table([['∬ f·r dr dθ',num(I)]]))}},
+
+{id:'5.5',name:'5.5 Integral triple rectangular',title:'Integral triple en coordenadas rectangulares. Volumen',
+ desc:'Sobre una caja [xa,xb]×[ya,yb]×[za,zb]: ∭ f dV y volumen.',
+ form:function(){return '<label>f(x,y,z)</label><input type="text" id="ff" value="1">'+
+   '<div class="row3"><div><label>x: a,b</label><input type="text" id="xr" value="0,2"></div><div><label>y: a,b</label><input type="text" id="yr" value="0,3"></div><div><label>z: a,b</label><input type="text" id="zr" value="0,1"></div></div>'},
+ run:function(){MODE='3d';var f=compile(val('ff')),xr=val('xr').split(','),yr=val('yr').split(','),zr=val('zr').split(',');
+   var xa=+xr[0],xb=+xr[1],ya=+yr[0],yb=+yr[1],za=+zr[0],zb=+zr[1];
+   var vol=trip(function(){return 1},xa,xb,ya,yb,za,zb,18),I=trip(function(x,y,z){return f({x:x,y:y,z:z})},xa,xb,ya,yb,za,zb,18);
+   function box(){var c=[[xa,ya,za],[xb,ya,za],[xb,yb,za],[xa,yb,za],[xa,ya,zb],[xb,ya,zb],[xb,yb,zb],[xa,yb,zb]],e=[[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]],out=[];
+     for(var i=0;i<e.length;i++)out.push({type:'curve3',pts:[c[e[i][0]],c[e[i][1]]],c:css('--acc')});return out}
+   items3=box();fit3();setHint();
+   show(table([['Volumen de la caja',num(vol)],['∭ f(x,y,z) dV',num(I)]]))}},
+
+{id:'5.6',name:'5.6 Cilíndricas / esféricas',title:'Integral triple en coordenadas cilíndricas y esféricas',
+ desc:'Cilíndricas: dV=r dr dθ dz. Esféricas: dV=ρ²sinφ dρ dφ dθ.',
+ form:function(){return '<label>Sistema</label><select id="sysc"><option value="cil">Cilíndricas (r,θ,z)</option><option value="esf">Esféricas (ρ,φ,θ)</option></select>'+
+   '<label>f (usa x,y,z)</label><input type="text" id="ff" value="1">'+
+   '<div class="row3"><div><label>u1: a,b</label><input type="text" id="u1" value="0,2"></div><div><label>u2: a,b</label><input type="text" id="u2" value="0,2pi"></div><div><label>u3: a,b</label><input type="text" id="u3" value="0,2"></div></div>'},
+ run:function(){MODE='3d';var sys=val('sysc'),f=compile(val('ff')),u1=val('u1').split(','),u2=val('u2').split(','),u3=val('u3').split(',');
+   var a1=compile(u1[0])({}),b1=compile(u1[1])({}),a2=compile(u2[0])({}),b2=compile(u2[1])({}),a3=compile(u3[0])({}),b3=compile(u3[1])({});
+   var I;
+   if(sys==='cil'){I=trip(function(r,t,z){var x=r*Math.cos(t),y=r*Math.sin(t);return f({x:x,y:y,z:z})*r},a1,b1,a2,b2,a3,b3,16);}
+   else{I=trip(function(rho,phi,th){var x=rho*Math.sin(phi)*Math.cos(th),y=rho*Math.sin(phi)*Math.sin(th),z=rho*Math.cos(phi);
+     return f({x:x,y:y,z:z})*rho*rho*Math.sin(phi)},a1,b1,a2,b2,a3,b3,16);}
+   var pts=[],i,j;for(i=0;i<=30;i++)for(j=0;j<=30;j++){var uu=a1+(b1-a1)*i/30,vv=a2+(b2-a2)*j/30,p;
+     if(sys==='cil')p=[uu*Math.cos(vv),uu*Math.sin(vv),(a3+b3)/2];else p=[uu*Math.sin((a2+b2)/2)*Math.cos(vv),uu*Math.sin((a2+b2)/2)*Math.sin(vv),uu*Math.cos((a2+b2)/2)];
+     pts.push(p)}
+   items3=[{type:'curve3',pts:pts,c:css('--acc'),w:1}];fit3();setHint();
+   show(table([['Sistema',sys==='cil'?'Cilíndricas':'Esféricas'],['∭ f dV (con jacobiano)',num(I)]]))}},
+
+/* === MODIFIED 5.7: CAMPOS VECTORIALES 2D/3D === */
+{id:'5.7',name:'5.7 Campos vectoriales',title:'Campos vectoriales (2D / 3D)',
+ desc:'Visualiza campos vectoriales en 2D o 3D. En 2D: F=(P,Q). En 3D: F=(P,Q,R).',
+ form:function(){return '<label>Dimensión</label><select id="fvmode" onchange="toggleFieldMode()">'+
+   '<option value="2d">2D — F(x,y)=(P,Q)</option><option value="3d">3D — F(x,y,z)=(P,Q,R)</option></select>'+
+   '<div id="fv2d"><label>P(x,y)</label><input type="text" id="P" value="-y">'+
+   '<label>Q(x,y)</label><input type="text" id="Q" value="x">'+
+   '<div class="row"><div><label>Dominio x</label><input type="text" id="xr" value="-3,3"></div><div><label>Dominio y</label><input type="text" id="yr" value="-3,3"></div></div></div>'+
+   '<div id="fv3d" style="display:none"><label>P(x,y,z)</label><input type="text" id="P3" value="-y">'+
+   '<label>Q(x,y,z)</label><input type="text" id="Q3" value="x">'+
+   '<label>R(x,y,z)</label><input type="text" id="R3" value="0">'+
+   '<div class="row3"><div><label>x</label><input type="text" id="xr3" value="-3,3"></div><div><label>y</label><input type="text" id="yr3" value="-3,3"></div><div><label>z</label><input type="text" id="zr3" value="-3,3"></div></div></div>'},
+ run:function(){var mode=val('fvmode');
+   if(mode==='2d'){MODE='2d';var P=compile(val('P')),Q=compile(val('Q')),xr=val('xr').split(','),yr=val('yr').split(',');
+     var xa=+xr[0],xb=+xr[1],ya=+yr[0],yb=+yr[1],n=10,items_=[],i,j,maxm=0,vecs=[];
+     for(i=0;i<=n;i++)for(j=0;j<=n;j++){var x=xa+(xb-xa)*i/n,y=ya+(yb-ya)*j/n,p=P({x:x,y:y}),q=Q({x:x,y:y}),m=Math.hypot(p,q);
+       vecs.push([x,y,p,q,m]);if(m>maxm)maxm=m}
+     var cell=Math.min((xb-xa)/n,(yb-ya)/n);
+     for(i=0;i<vecs.length;i++){var v=vecs[i],k=maxm>1e-9?cell*0.9/maxm:0;
+       items_.push({type:'vec2',from:[v[0],v[1]],to:[v[0]+v[2]*k,v[1]+v[3]*k],c:css('--acc')})}
+     items=items_;fit2();setHint();
+     show(table([['F(x,y)','('+val('P')+', '+val('Q')+')'],['Magnitud máxima',num(maxm)]]))
+   }else{MODE='3d';var P=compile(val('P3')),Q=compile(val('Q3')),R=compile(val('R3')),xr=val('xr3').split(','),yr=val('yr3').split(','),zr=val('zr3').split(',');
+     var xa=+xr[0],xb=+xr[1],ya=+yr[0],yb=+yr[1],za=+zr[0],zb=+zr[1],n=4,items_=[],i,j,k,maxm=0,vecs=[];
+     for(i=0;i<=n;i++)for(j=0;j<=n;j++)for(k=0;k<=n;k++){var x=xa+(xb-xa)*i/n,y=ya+(yb-ya)*j/n,z=za+(zb-za)*k/n;
+       var p=P({x:x,y:y,z:z}),q=Q({x:x,y:y,z:z}),r=R({x:x,y:y,z:z}),m=Math.sqrt(p*p+q*q+r*r);
+       vecs.push([x,y,z,p,q,r,m]);if(m>maxm)maxm=m}
+     var cell=Math.min((xb-xa)/n,(yb-ya)/n,(zb-za)/n);
+     for(i=0;i<vecs.length;i++){var v=vecs[i],s=maxm>1e-9?cell*0.9/maxm:0;
+       items_.push({type:'vec3',from:[v[0],v[1],v[2]],to:[v[0]+v[3]*s,v[1]+v[4]*s,v[2]+v[5]*s],c:css('--acc')})}
+     items3=items_;fit3();setHint();
+     show(table([['F(x,y,z)','('+val('P3')+', '+val('Q3')+', '+val('R3')+')'],['Magnitud máxima',num(maxm)]]))
+   }}},
+
+{id:'5.8',name:'5.8 Integral de línea',title:'La integral de línea',
+ desc:'∫_C P dx + Q dy con curva x(t),y(t), t en [a,b].',
+ form:function(){return '<label>P(x,y)</label><input type="text" id="P" value="-y">'+
+   '<label>Q(x,y)</label><input type="text" id="Q" value="x">'+par2('cos(t)','sin(t)','0','2pi')},
+ run:function(){MODE='2d';var P=compile(val('P')),Q=compile(val('Q')),Pr=getPar2();
+   var I=simpson(function(t){var x=Pr.fx({t:t}),y=Pr.fy({t:t}),xp=d1(Pr.fx,t),yp=d1(Pr.fy,t);
+     return P({x:x,y:y})*xp+Q({x:x,y:y})*yp},Pr.a,Pr.b,2000);
+   var pts=sample2(Pr.fx,Pr.fy,Pr.a,Pr.b,800);items=[{type:'curve',pts:pts}];fit2();setHint();
+   show(table([['∫_C P dx + Q dy',num(I)]]))}},
+
+{id:'5.9',name:'5.9 Divergencia y rotacional',title:'Divergencia, rotacional: interpretación geométrica y física',
+ desc:'div F = ∂P/∂x+∂Q/∂y. rot F (componente z) = ∂Q/∂x−∂P/∂y.',
+ form:function(){return '<label>P(x,y)</label><input type="text" id="P" value="x^2">'+
+   '<label>Q(x,y)</label><input type="text" id="Q" value="x*y">'+
+   '<div class="row3"><div><label>x₀</label><input type="text" id="x0" value="1"></div><div><label>y₀</label><input type="text" id="y0" value="1"></div></div>'},
+ run:function(){MODE='2d';var P=compile(val('P')),Q=compile(val('Q')),x0=fv('x0'),y0=fv('y0');
+   var div=pdx(P,x0,y0)+pdy(Q,x0,y0),rot=pdx(Q,x0,y0)-pdy(P,x0,y0);
+   var n=8,xa=x0-3,xb=x0+3,ya=y0-3,yb=y0+3,items_=[],maxm=0,vecs=[],i,j;
+   for(i=0;i<=n;i++)for(j=0;j<=n;j++){var x=xa+(xb-xa)*i/n,y=ya+(yb-ya)*j/n,p=P({x:x,y:y}),q=Q({x:x,y:y}),m=Math.hypot(p,q);
+     vecs.push([x,y,p,q]);if(m>maxm)maxm=m}
+   var cell=(xb-xa)/n,k=maxm>1e-9?cell*0.9/maxm:0;
+   for(i=0;i<vecs.length;i++)items_.push({type:'vec2',from:[vecs[i][0],vecs[i][1]],to:[vecs[i][0]+vecs[i][2]*k,vecs[i][1]+vecs[i][3]*k],c:css('--acc')});
+   items_.push({type:'pt',x:x0,y:y0,label:'punto',c:css('--acc2')});items=items_;fit2();setHint();
+   show(table([['div F en (x₀,y₀)',num(div)],['Interpretación',div>0?'fuente':div<0?'sumidero':'incompresible'],
+     ['rot F (componente z)',num(rot)],['Interpretación',rot>0?'giro antihorario':rot<0?'giro horario':'sin rotación local']]))}},
+
+{id:'5.10',name:'5.10 Teoremas de integrales',title:'Teoremas de integrales: Green (aplicación)',
+ desc:'Verifica el Teorema de Green: ∮_C P dx+Q dy = ∬_R (∂Q/∂x−∂P/∂y) dA.',
+ form:function(){return '<label>P(x,y)</label><input type="text" id="P" value="-y/2">'+
+   '<label>Q(x,y)</label><input type="text" id="Q" value="x/2">'+
+   '<label>Radio r de la región circular</label><input type="text" id="rr" value="2">'},
+ run:function(){MODE='2d';var P=compile(val('P')),Q=compile(val('Q')),r=fv('rr');
+   var line=simpson(function(t){var x=r*Math.cos(t),y=r*Math.sin(t),xp=-r*Math.sin(t),yp=r*Math.cos(t);
+     return P({x:x,y:y})*xp+Q({x:x,y:y})*yp},0,2*Math.PI,3000);
+   var areaInt=dbl(function(x,y){if(x*x+y*y>r*r)return 0;return pdx(Q,x,y)-pdy(P,x,y)},-r,r,-r,r,80);
+   var pts=[],i;for(i=0;i<=800;i++){var t=2*Math.PI*i/800;pts.push([r*Math.cos(t),r*Math.sin(t)])}
+   items=[{type:'fill',pts:pts},{type:'curve',pts:pts}];fit2();setHint();
+   show(table([['∮_C P dx+Q dy (integral de línea)',num(line)],['∬_R (Qx−Py) dA (integral doble)',num(areaInt)],
+     ['Diferencia (debe ser ≈0)',num(Math.abs(line-areaInt))]]))}}
+];
+
+function toggleFieldMode(){var m=val('fvmode');
+  document.getElementById('fv2d').style.display=m==='2d'?'block':'none';
+  document.getElementById('fv3d').style.display=m==='3d'?'block':'none';}
+
+/* ================= NAV ================= */
+var UNITS=[{name:'Unidad 1 · Vectores',t:U1},{name:'Unidad 2 · Curvas planas',t:U2},
+  {name:'Unidad 3 · Funciones vectoriales',t:U3},{name:'Unidad 4 · Varias variables',t:U4},{name:'Unidad 5 · Integración múltiple',t:U5}];
+var curU=0,curT=0;
+function go(){try{UNITS[curU].t[curT].run()}catch(e){fail(e)}}
+
+function buildExampleSelector(tabId){
+  var ex=EXAMPLES[tabId];
+  if(!ex||!ex.length)return '';
+  var h='<div class="ex-dropdown"><label>📚 Ejemplos predefinidos</label><select onchange="applyExample(\''+tabId+'\',this.value)">';
+  h+='<option value="">— Seleccionar ejemplo —</option>';
+  for(var i=0;i<ex.length;i++)h+='<option value="'+i+'">'+ex[i].n+'</option>';
+  h+='</select></div>';
+  return h;
+}
+
+function openTab(i){curT=i;var T=UNITS[curU].t[i];
+  document.getElementById('ctrl').innerHTML='<h2>'+T.title+'</h2><p class="desc">'+T.desc+'</p>'+T.form()+
+    '<button class="go" onclick="go()">Calcular y graficar</button>'+
+    '<p class="hint">Funciones: sin cos tan sec csc cot asin acos atan sinh cosh tanh exp ln log sqrt abs · constantes: pi, e · potencia: ^</p>'+
+    buildExampleSelector(T.id);
+  // Initialize field mode if present
+  var fm=document.getElementById('fvmode');
+  if(fm)toggleFieldMode();
+  var bs=document.querySelectorAll('#tabs button'),k;for(k=0;k<bs.length;k++)bs[k].className=k===i?'on':'';
+  go()}
+
+function openUnit(i){curU=i;curT=0;
+  var ub=document.querySelectorAll('#units button'),k;for(k=0;k<ub.length;k++)ub[k].className=k===i?'on':'';
+  var h='',j;for(j=0;j<UNITS[i].t.length;j++)h+='<button onclick="openTab('+j+')">'+UNITS[i].t[j].name+'</button>';
+  document.getElementById('tabs').innerHTML=h;openTab(0)}
+
+(function(){var h='',i;for(i=0;i<UNITS.length;i++)h+='<button onclick="openUnit('+i+')">'+UNITS[i].name+'</button>';
+  document.getElementById('units').innerHTML=h;openUnit(0)})();
+</script>
+</body>
+</html>
