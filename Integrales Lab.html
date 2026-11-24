@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Laboratorio de Integración Múltiple</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#eef2f8;--pn:#fff;--ink:#0f1b33;--mu:#5a667b;--ln:#d8dfeb;--ac:#2347e8;--ac2:#d96a00;--ok:#0a7d57;--cv:#fbfcff;--ax:#8794ab;--hi:#eaf0ff;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1120;--pn:#121a2e;--ink:#e8edf8;--mu:#93a0b8;--ln:#25304c;--ac:#7b9bff;--ac2:#ffb04a;--ok:#4fd6a4;--cv:#0d1527;--ax:#667592;--hi:#1a2542;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b1120;--pn:#121a2e;--ink:#e8edf8;--mu:#93a0b8;--ln:#25304c;--ac:#7b9bff;--ac2:#ffb04a;--ok:#4fd6a4;--cv:#0d1527;--ax:#667592;--hi:#1a2542;color-scheme:dark}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font:15px/1.5 'IBM Plex Sans',system-ui,sans-serif}
+.mono,input,select,.big,.steps .m{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.rail{padding:22px 14px;border-right:1px solid var(--ln);position:sticky;top:0;align-self:start;height:100vh;overflow:auto}
+.brand{display:flex;gap:10px;align-items:center;margin:0 6px 22px}
+.brand b{font:600 26px 'IBM Plex Mono',monospace;color:var(--ac)}
+.brand span{font-weight:600;line-height:1.2}.brand small{display:block;color:var(--mu);font-weight:400;font-size:12px}
+.nav{display:flex;flex-direction:column;gap:4px}
+.nav button{all:unset;cursor:pointer;display:flex;align-items:center;gap:12px;padding:9px 10px;border-radius:9px;color:var(--mu);font-weight:500}
+.nav button i{font:500 14px 'IBM Plex Mono',monospace;font-style:normal;min-width:38px;text-align:center;padding:5px 0;border-radius:7px;border:1px solid var(--ln);color:var(--ink)}
+.nav button:hover{background:var(--hi);color:var(--ink)}
+.nav button[aria-current=true]{background:var(--hi);color:var(--ink);box-shadow:inset 3px 0 0 var(--ac)}
+.nav button[aria-current=true] i{border-color:var(--ac);color:var(--ac)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.main{padding:22px 26px 40px;min-width:0}
+.top{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:18px}
+.top h1{margin:0;font-size:24px;letter-spacing:-.01em}.top p{margin:4px 0 0;color:var(--mu);max-width:62ch}
+.top .meta{margin:0 0 6px;color:var(--mu);font-size:11.5px;letter-spacing:.02em;font-weight:500}
+.tg{cursor:pointer;border:1px solid var(--ln);background:var(--pn);color:var(--ink);border-radius:999px;padding:8px 14px;font:500 13px 'IBM Plex Sans',sans-serif;white-space:nowrap}
+.cols{display:grid;grid-template-columns:minmax(330px,5fr) minmax(340px,6fr);gap:16px;align-items:start}
+.pn{background:var(--pn);border:1px solid var(--ln);border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.pn h2{margin:0 0 12px;font-size:14px;font-weight:600;color:var(--mu)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.chips button{cursor:pointer;border:1px solid var(--ln);background:transparent;color:var(--ink);border-radius:999px;padding:5px 11px;font:400 12.5px 'IBM Plex Sans',sans-serif}
+.chips button:hover{border-color:var(--ac);color:var(--ac)}
+form{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px}
+.f{display:flex;flex-direction:column;gap:4px;min-width:0}.f.w2{grid-column:span 2}.f[hidden]{display:none}
+label{font-size:12.5px;color:var(--mu)}
+input,select{width:100%;background:var(--cv);color:var(--ink);border:1px solid var(--ln);border-radius:8px;padding:8px 10px;font-size:14px}
+.go{grid-column:span 2;cursor:pointer;border:0;border-radius:10px;background:var(--ac);color:var(--cv);font:600 15px 'IBM Plex Sans',sans-serif;padding:11px;margin-top:4px}
+.big{font-size:30px;font-weight:500;color:var(--ac2);word-break:break-all;line-height:1.2}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
+.tag{border:1px solid var(--ln);border-radius:8px;padding:3px 9px;font-size:12.5px;color:var(--mu)}.tag b{color:var(--ok);font-family:'IBM Plex Mono',monospace;font-weight:500}
+.steps{list-style:none;margin:14px 0 0;padding:0;counter-reset:s}
+.steps li{counter-increment:s;position:relative;padding:0 0 14px 38px;border-left:0}
+.steps li::before{content:counter(s);position:absolute;left:0;top:0;width:25px;height:25px;border-radius:50%;background:var(--hi);color:var(--ac);font:600 12.5px 'IBM Plex Mono',monospace;display:grid;place-items:center}
+.steps li::after{content:"";position:absolute;left:12px;top:28px;bottom:3px;width:1px;background:var(--ln)}.steps li:last-child::after{display:none}
+.steps b{font-weight:600}.steps .m{font-size:13.5px;display:block;margin-top:3px;overflow-x:auto}
+.lm{display:inline-flex;flex-direction:column;vertical-align:middle;font-size:.7em;line-height:1.1;margin:0 .3em 0 .05em;text-align:left}
+.err{border:1px solid var(--ac2);border-radius:10px;padding:10px 12px;color:var(--ac2)}
+.gp{position:sticky;top:16px}
+canvas{display:block;width:100%;height:min(480px,62vh);border:1px solid var(--ln);border-radius:10px;touch-action:none;cursor:grab}
+.vw{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}
+.vw button{cursor:pointer;border:1px solid var(--ln);background:transparent;color:var(--ink);border-radius:8px;padding:5px 12px;font:400 12.5px 'IBM Plex Sans',sans-serif}
+.vw button[aria-pressed=true]{background:var(--ac);border-color:var(--ac);color:var(--cv)}
+.vw .grp{display:flex;gap:6px;align-items:center;padding-left:10px;border-left:1px solid var(--ln)}
+.vw span{margin-left:auto;color:var(--mu);font-size:12px}
+@media (max-width:1100px){.cols{grid-template-columns:1fr}.gp{position:static}}
+@media (max-width:860px){.app{grid-template-columns:1fr}.rail{position:static;height:auto;border-right:0;border-bottom:1px solid var(--ln);padding:14px}.brand{margin-bottom:12px}.nav{flex-direction:row;overflow-x:auto}.nav button{flex:none}.nav button span{display:none}.main{padding:16px 14px 32px}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="rail">
+  <div class="brand"><b>∭</b><span>Laboratorio<small>Integración múltiple</small></span></div>
+  <nav class="nav" id="nav" aria-label="Tipo de problema"></nav>
+</aside>
+<main class="main">
+  <div class="top">
+    <div>
+      <p class="meta">Asignatura: Cálculo Vectorial · Diseño: Rod Compañ 2026 · TecNM Tuxtepec</p>
+      <h1 id="ttl"></h1>
+      <p id="dsc"></p>
+    </div>
+    <button class="tg" id="tg" type="button">◐ Tema</button>
+  </div>
+  <div class="cols">
+    <div>
+      <section class="pn"><h2>Ejemplos</h2><div class="chips" id="pre"></div><h2>Datos del problema</h2><form id="frm" autocomplete="off"></form></section>
+      <section class="pn" id="out"><h2>Resolución</h2><p style="color:var(--mu);margin:0">Elige un ejemplo o escribe tu problema y pulsa «Resolver».</p></section>
+    </div>
+    <section class="pn gp"><h2 id="gt">Gráfica</h2><canvas id="cv" aria-label="Gráfica del problema"></canvas>
+      <div class="vw">
+        <button type="button" id="v3" aria-pressed="true">Vista 3D</button>
+        <button type="button" id="v2" aria-pressed="false">Vista superior</button>
+        <div class="grp" id="styleGrp">
+          <button type="button" id="vMesh" aria-pressed="true">Malla</button>
+          <button type="button" id="vSolid" aria-pressed="false">Sólido</button>
+        </div>
+        <span>Arrastra para girar</span>
+      </div></section>
+  </div>
+</main>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.2/math.min.js"></script>
+<script>
+const $=s=>document.querySelector(s);
+
+/* Normalizador: convierte símbolos "bonitos" (·, ×, −) a operadores mathjs */
+const prep=s=>String(s).trim()
+  .replace(/[·×]/g,'*')
+  .replace(/[−–—]/g,'-')
+  .replace(/θ|theta/g,'t')
+  .replace(/φ|phi/g,'p')
+  .replace(/ρ/g,'rho')
+  .replace(/π/g,'pi')
+  .replace(/\bsen\b/g,'sin')||'0';
+
+const cache={};
+function comp(s){
+  const key=prep(s);
+  if(cache[key])return cache[key];
+  const n=math.compile(key);
+  return cache[key]=sc=>{
+    const v=n.evaluate(sc);
+    if(typeof v!=='number'||!isFinite(v))throw Error('La expresión «'+s+'» no produce un número real en algún punto de la región.');
+    return v;
+  };
+}
+const K=s=>comp(s)({}),D=(s,v)=>math.simplify(math.derivative(prep(s),v)).toString();
+const SY=s=>math.simplify(prep(s)).toString().replace(/\s*\*\s*/g,'·');
+const fx=v=>Number.isFinite(v)?(Math.abs(v)<1e-11?'0':String(+v.toPrecision(9))):'—';
+function guess(v){const F=[['',1],['π',Math.PI],['π²',Math.PI**2],['√2',Math.SQRT2],['√3',Math.sqrt(3)],['√2π²',Math.SQRT2*Math.PI**2]];
+ if(Math.abs(v)<1e-9)return'0';
+ for(const[n,f]of F){const x=v/f;for(let q=1;q<=120;q++){const p=Math.round(x*q);if(p&&Math.abs(x*q-p)<1e-8*q){const a=n?(p===1?'':p===-1?'−':p):p;return q===1?a+n:a+n+'/'+q}}}return''}
+/* cuadratura Gauss-Legendre */
+function gl(n){const x=[],w=[];for(let i=0;i<n;i++){let z=Math.cos(Math.PI*(i+.75)/(n+.5)),pp=1;for(let k=0;k<60;k++){let p1=1,p2=0;for(let j=0;j<n;j++){const p3=p2;p2=p1;p1=((2*j+1)*z*p2-j*p3)/(j+1)}pp=n*(z*p1-p2)/(z*z-1);const z1=z;z=z1-p1/pp;if(Math.abs(z-z1)<1e-14)break}x.push(z);w.push(2/((1-z*z)*pp*pp))}return[x,w]}
+const GL={};
+function I(f,a,b,n=16){const[x,w]=GL[n]||(GL[n]=gl(n)),h=(b-a)/2,m=(a+b)/2;let s=0;for(let i=0;i<n;i++)s+=w[i]*f(m+h*x[i]);return s*h}
+const IP=(f,a,b,n,P)=>{let s=0;for(let k=0;k<P;k++)s+=I(f,a+(b-a)*k/P,a+(b-a)*(k+1)/P,n);return s};
+const lim=(a,b)=>`<span class="lm"><span>${b}</span><span>${a}</span></span>`;
+const iint=(a,b,t)=>`∫${lim(a,b)}${t}`;
+const errTag=(v,v0)=>`<span class="tag">error estimado <b>${(Math.abs(v-v0)).toExponential(1)}</b></span>`;
+const outTag=v=>{const g=guess(v);return g?`<span class="tag">forma exacta <b>${g}</b></span>`:''};
+
+/* ---------- escena 3D ---------- */
+let scene=null,view={yaw:-.75,el:.5,top:false,solid:false};
+const dark=()=>{const t=document.documentElement.dataset.theme;return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches};
+const ramp=u=>`hsl(${235-Math.max(0,Math.min(1,u))*200} 80% ${dark()?62:44}%)`;
+
+/* Color con sombreado Lambertiano: k en [0,1] aprox. */
+const rampShaded=(u,k)=>{
+  const h=235-Math.max(0,Math.min(1,u))*200;
+  const baseL=dark()?58:46;
+  const L=Math.max(15,Math.min(84,baseL*(0.42+0.85*k)));
+  return `hsl(${h} 80% ${L}%)`;
+};
+/* Normal "hacia arriba" y dot con una luz fija (arriba, un poco +x+y) */
+function quadShade(pts){
+  const a=pts[0],b=pts[1],c=pts[2];
+  const ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2];
+  const vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
+  let nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx;
+  const len=Math.hypot(nx,ny,nz)||1;
+  nx/=len;ny/=len;nz/=len;
+  if(nz<0){nx=-nx;ny=-ny;nz=-nz}
+  return Math.max(0.15,nx*0.35+ny*0.45+nz*0.82);
+}
+
+function mesh(fn,nu,nv,items){
+  const g=[];
+  let lo=1e99,hi=-1e99;
+  for(let i=0;i<=nu;i++){
+    g[i]=[];
+    for(let j=0;j<=nv;j++){
+      const p=fn(i,j);
+      g[i][j]=p;
+      lo=Math.min(lo,p[2]);
+      hi=Math.max(hi,p[2]);
+    }
+  }
+  const c=p=>(p[2]-lo)/((hi-lo)||1);
+  for(let i=0;i<=nu;i++)for(let j=0;j<=nv;j++){
+    if(j<nv)items.push({t:'l',a:g[i][j],b:g[i][j+1],c:c(g[i][j]),w:1,mesh:true});
+    if(i<nu)items.push({t:'l',a:g[i][j],b:g[i+1][j],c:c(g[i][j]),w:1,mesh:true});
+    if(i<nu&&j<nv){
+      const p00=g[i][j],p01=g[i][j+1],p11=g[i+1][j+1],p10=g[i+1][j];
+      const ca=(c(p00)+c(p01)+c(p11)+c(p10))/4;
+      items.push({t:'q',pts:[p00,p01,p11,p10],c:ca});
+    }
+  }
+}
+function base(lo,hi,n,items){const A=[],B=[];for(let i=0;i<=n;i++){A.push(lo(i/n));B.push(hi(i/n))}
+ items.push({t:'f',pts:[...A,...B.slice().reverse()]});
+ for(const L of[A,B])for(let i=0;i<n;i++)items.push({t:'l',a:L[i],b:L[i+1],c:'--ac2',w:2});
+ items.push({t:'l',a:A[0],b:B[0],c:'--ac2',w:2},{t:'l',a:A[n],b:B[n],c:'--ac2',w:2})}
+function quiver(Fv,cf,L,z0,extra,cap){const mk=(N,pl)=>{const cell=2*L/N,vs=[];for(let i=0;i<=N;i++)for(let j=0;j<=N;j++)for(let k=0;k<=(pl?0:N);k++){const x=-L+i*cell,y=-L+j*cell,z=pl?z0:-L+k*cell,v=Fv(x,y,z),m=Math.hypot(...(pl?[v[0],v[1]]:v))||1;vs.push([x,y,z,v[0]/m,v[1]/m,pl?0:v[2]/m,cf(x,y,z)])}
+ const c=vs.map(q=>q[6]),lo=Math.min(...c),hi=Math.max(...c);
+ return vs.map(q=>({t:'a',a:[q[0],q[1],q[2]],b:[q[0]+.8*cell*q[3],q[1]+.8*cell*q[4],q[2]+.8*cell*q[5]],c:(q[6]-lo)/((hi-lo)||1),w:1.5})).concat(extra||[])};
+ return{items:mk(4,false),alt:mk(10,true),top:false,cap:cap}}
+
+function draw(){
+  const cv=$('#cv'),d=devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+  cv.width=W*d;cv.height=H*d;
+  const g=cv.getContext('2d');g.setTransform(d,0,0,d,0,0);
+  const cs=getComputedStyle(document.documentElement),col=k=>cs.getPropertyValue(k).trim(),cc=c=>typeof c==='number'?ramp(c):c.startsWith('--')?col(c):c;
+  g.fillStyle=col('--cv');g.fillRect(0,0,W,H);if(!scene)return;
+  const tp=view.top,its=tp&&scene.alt?scene.alt:scene.items,raw=[];
+  for(const it of its){if(it.pts)raw.push(...it.pts);else{raw.push(it.a);if(it.b)raw.push(it.b)}}
+  const b=[0,0,0,0,0,0];for(let k=0;k<3;k++){const v=raw.map(p=>p[k]);b[2*k]=Math.min(0,...v);b[2*k+1]=Math.max(0,...v);if(b[2*k+1]-b[2*k]<1e-9){b[2*k]-=.5;b[2*k+1]+=.5}}
+  const xr=b[1]-b[0],yr=b[3]-b[2],zr=b[5]-b[4],zs=tp?1:Math.max(.05,Math.min(20,Math.max(xr,yr)/zr));
+  const el=tp?Math.PI/2:view.el,ya=tp?0:view.yaw,cy=Math.cos(ya),sy=Math.sin(ya),ce=Math.cos(el),se=Math.sin(el);
+  const Pj=p=>{const x=p[0]*cy-p[1]*sy,y=p[0]*sy+p[1]*cy;return[x,p[2]*zs*ce+y*se]};
+  const co=[];for(let i=0;i<2;i++)for(let j=0;j<2;j++)for(let k=0;k<2;k++)co.push([b[i],b[2+j],b[4+k]]);
+  const pr=[...co,...raw].map(Pj),X0=Math.min(...pr.map(p=>p[0])),X1=Math.max(...pr.map(p=>p[0])),Y0=Math.min(...pr.map(p=>p[1])),Y1=Math.max(...pr.map(p=>p[1])),pad=40;
+  const s=Math.min((W-2*pad)/((X1-X0)||1),(H-2*pad)/((Y1-Y0)||1)),ox=(W-(X1-X0)*s)/2,oy=(H-(Y1-Y0)*s)/2;
+  const S=p=>{const q=Pj(p);return[ox+(q[0]-X0)*s,H-oy-(q[1]-Y0)*s]};
+
+  /* 1. Región base (footprint translúcido en z=0) */
+  g.lineWidth=1;g.font='11px IBM Plex Mono, monospace';
+  g.strokeStyle=col('--ln');for(let a=0;a<8;a++)for(const m of[4,2,1]){if(a&m||(tp&&m===1))continue;g.beginPath();g.moveTo(...S(co[a]));g.lineTo(...S(co[a|m]));g.stroke()}
+  for(const it of its)if(it.t==='f'){g.beginPath();it.pts.forEach((p,i)=>{const q=S(p);i?g.lineTo(...q):g.moveTo(...q)});g.closePath();g.globalAlpha=.16;g.fillStyle=col('--ac2');g.fill();g.globalAlpha=1}
+
+  /* 2. Ejes del cubo */
+  g.strokeStyle=g.fillStyle=col('--ax');
+  const axes=[[[b[0],0,0],[b[1],0,0],'x'],[[0,b[2],0],[0,b[3],0],'y']];if(!tp)axes.push([[0,0,b[4]],[0,0,b[5]],'z']);
+  for(const[a,c,n]of axes){const A=S(a),B=S(c);g.beginPath();g.moveTo(...A);g.lineTo(...B);g.stroke();g.font='bold 13px IBM Plex Mono, monospace';g.fillText(n,B[0]+6,B[1]-5);g.font='11px IBM Plex Mono, monospace'}
+  const tk=(p,t,dx,dy)=>{const q=S(p);g.fillText(t,q[0]+dx,q[1]+dy)};
+  tk([b[0],b[2],b[4]],fx(b[0]),-8,14);tk([b[1],b[2],b[4]],fx(b[1]),-8,14);tk([b[1],b[2],b[4]],fx(b[2]),8,12);tk([b[1],b[3],b[4]],fx(b[3]),8,4);
+  if(!tp){tk([b[0],b[2],b[4]],fx(b[4]),-34,4);tk([b[0],b[2],b[5]],fx(b[5]),-34,4)}
+
+  /* 3. Superficie como sólido (algoritmo del pintor, de atrás hacia adelante) */
+  if(view.solid){
+    const quads=its.filter(it=>it.t==='q');
+    if(quads.length){
+      const qd=quads.map(q=>{
+        let py=0;
+        for(const p of q.pts)py+=Pj(p)[1];
+        return{q,py:py/q.pts.length};
+      });
+      qd.sort((a,b)=>b.py-a.py); /* mayor "y" proyectada = más lejos = primero */
+      const edgeCol=dark()?'rgba(0,0,0,0.35)':'rgba(0,0,0,0.15)';
+      for(const{q}of qd){
+        g.beginPath();
+        q.pts.forEach((p,i)=>{const sp=S(p);i?g.lineTo(...sp):g.moveTo(...sp)});
+        g.closePath();
+        g.fillStyle=rampShaded(q.c,quadShade(q.pts));
+        g.fill();
+        g.strokeStyle=edgeCol;
+        g.lineWidth=0.6;
+        g.stroke();
+      }
+    }
+  }
+
+  /* 4. Líneas / flechas / puntos */
+  for(const it of its){
+    if(it.t==='f'||it.t==='q')continue;
+    if(view.solid&&it.mesh)continue;   /* en sólido, ocultar malla interna */
+    const A=S(it.a);g.strokeStyle=g.fillStyle=cc(it.c);g.lineWidth=it.w||1;
+    if(it.t==='d'){g.beginPath();g.arc(A[0],A[1],it.r||4,0,7);g.fill();continue}
+    const B=S(it.b);g.beginPath();g.moveTo(...A);g.lineTo(...B);g.stroke();
+    if(it.t==='a'){const th=Math.atan2(B[1]-A[1],B[0]-A[0]),h=Math.min(7,Math.hypot(B[0]-A[0],B[1]-A[1])*.5);g.beginPath();g.moveTo(...B);g.lineTo(B[0]-h*Math.cos(th-.45),B[1]-h*Math.sin(th-.45));g.lineTo(B[0]-h*Math.cos(th+.45),B[1]-h*Math.sin(th+.45));g.closePath();g.fill()}
+  }
+  if(scene.cap){g.fillStyle=col('--mu');g.font='12px IBM Plex Sans, sans-serif';g.fillText(scene.cap+(tp&&scene.alt?'  ·  corte z = z₀':''),12,18)}
+}
+
+function setScene(sc){
+  scene=sc;view.top=!!sc.top;
+  $('#v2').textContent=sc.alt?'Corte z = z₀':'Vista superior';
+  const allItems=(sc.items||[]).concat(sc.alt||[]);
+  const hasSolid=allItems.some(it=>it.t==='q');
+  $('#styleGrp').style.display=hasSolid?'':'none';
+  syncV();draw();
+}
+function syncV(){
+  $('#v3').setAttribute('aria-pressed',!view.top);
+  $('#v2').setAttribute('aria-pressed',view.top);
+  $('#vMesh').setAttribute('aria-pressed',!view.solid);
+  $('#vSolid').setAttribute('aria-pressed',view.solid);
+}
+$('#v3').onclick=()=>{view.top=false;syncV();draw()};
+$('#v2').onclick=()=>{view.top=true;syncV();draw()};
+$('#vMesh').onclick=()=>{view.solid=false;syncV();draw()};
+$('#vSolid').onclick=()=>{view.solid=true;syncV();draw()};
+{let dr=null;const c=$('#cv');c.onpointerdown=e=>{dr=[e.clientX,e.clientY];c.setPointerCapture(e.pointerId)};c.onpointerup=()=>dr=null;
+c.onpointermove=e=>{if(!dr)return;view.top=false;view.yaw+=(e.clientX-dr[0])*.01;view.el=Math.max(-1.5,Math.min(1.5,view.el+(e.clientY-dr[1])*.01));dr=[e.clientX,e.clientY];syncV();draw()}}
+addEventListener('resize',draw);
+
+/* ---------- modos ---------- */
+const SYS={rect:['x','y','z'],cil:['θ','r','z'],esf:['θ','φ','ρ']},VN={rect:['x','y','z'],cil:['t','r','z'],esf:['t','p','rho']};
+const toXYZ=(s,v)=>s==='rect'?v:s==='cil'?[v[1]*Math.cos(v[0]),v[1]*Math.sin(v[0]),v[2]]:[v[2]*Math.sin(v[1])*Math.cos(v[0]),v[2]*Math.sin(v[1])*Math.sin(v[0]),v[2]*Math.cos(v[1])];
+const JAC={rect:'1',cil:'r',esf:'ρ² sin φ'};
+const vecMath=v=>({x:v.P,y:v.Q,z:v.R});
+function curlOf(v){const c=(a,b)=>SY(`(${a})-(${b})`);return[c(D(v.R,'y'),D(v.Q,'z')),c(D(v.P,'z'),D(v.R,'x')),c(D(v.Q,'x'),D(v.P,'y'))]}
+function isCons(cr,L=2){const f=cr.map(comp);for(let i=0;i<8;i++){const sc={x:(i*.7)%L-.9,y:(i*1.3)%L-.8,z:(i*.5)%L-.4};if(f.some(g=>Math.abs(g(sc))>1e-8))return false}return true}
+
+const MODES=[
+{id:'rect',ic:'∬',n:'Doble e iteradas',d:'Integral doble en coordenadas rectangulares con límites variables. Cambia el orden de integración para resolver integrales iteradas.',
+ F:[['f','Integrando f(x, y)','x*y',2],['order','Orden de integración','dydx',2,[['dydx','dy dx  (x es la variable exterior)'],['dxdy','dx dy  (y es la variable exterior)']]],['a','Variable exterior: desde','0'],['b','Variable exterior: hasta','1'],['g1','Variable interior: desde (en función de la exterior)','x^2'],['g2','Variable interior: hasta','x']],
+ P:[['x + 2y en [0,2]×[0,1]',{f:'x+2*y',order:'dydx',a:'0',b:'2',g1:'0',g2:'1'}],['xy entre y = x² y y = x',{f:'x*y',order:'dydx',a:'0',b:'1',g1:'x^2',g2:'x'}],['Volumen bajo 4 − x² − y²',{f:'4-x^2-y^2',order:'dydx',a:'0',b:'1',g1:'0',g2:'1'}],['Invertir orden: e^(y²)',{f:'exp(y^2)',order:'dxdy',a:'0',b:'1',g1:'0',g2:'y'}],['Invertir orden: sin(y³)',{f:'sin(y^3)',order:'dxdy',a:'0',b:'2',g1:'0',g2:'y^2'}]],
+ solve(v){const ov=v.order==='dydx'?'x':'y',iv=ov==='x'?'y':'x',F=comp(v.f),G1=comp(v.g1),G2=comp(v.g2),a=K(v.a),b=K(v.b);
+  const inn=(o,n)=>{const s={x:0,y:0};s[ov]=o;const lo=G1(s),hi=G2(s);return[I(i=>{const q={...s};q[iv]=i;return F(q)},lo,hi,n),lo,hi]};
+  const tot=n=>I(o=>inn(o,n)[0],a,b,n),R=tot(24),R0=tot(12);
+  const pts=[a,(a+b)/2,b].map(o=>{const[g,lo,hi]=inn(o,24);return`G(${fx(o)}) = ${iint(fx(lo),fx(hi),`f d${iv}`)} = <b>${fx(g)}</b>`});
+  const xy=(o,i)=>ov==='x'?[o,i]:[i,o],it=[],pl=(u,s)=>{const o=a+(b-a)*u,sc={x:0,y:0};sc[ov]=o;const lo=G1(sc),hi=G2(sc),i=lo+(hi-lo)*s;return[...xy(o,i),F(xy(o,i).reduce((q,c,k)=>(q[k?'y':'x']=c,q),{}))]};
+  mesh((i,j)=>pl(i/22,j/12),22,12,it);base(u=>[...xy(a+(b-a)*u,G1(Object.fromEntries([[ov,a+(b-a)*u]]))),0],u=>[...xy(a+(b-a)*u,G2(Object.fromEntries([[ov,a+(b-a)*u]]))),0],40,it);
+  return{main:fx(R),tags:outTag(R)+errTag(R,R0),steps:[`<b>Planteamiento.</b> Región tipo ${ov==='x'?'I':'II'}.<span class="m">${iint(v.a,v.b,'')}${iint(v.g1,v.g2,`(${v.f}) d${iv}`)} d${ov}</span>`,`<b>Integral interior</b> respecto a ${iv} (con ${ov} fija), evaluada en tres valores de ${ov}:<span class="m">${pts.join('<br>')}</span>`,`<b>Integral exterior.</b> Se integra G(${ov}) de ${fx(a)} a ${fx(b)}:<span class="m">${iint(fx(a),fx(b),`G(${ov}) d${ov}`)} = ${fx(R)}</span>`,`<b>Interpretación.</b> ${v.f.trim()==='1'?'El resultado es el área de la región.':'Si f ≥ 0 es el volumen bajo la superficie z = f(x, y) sobre la región; en otro caso, un volumen con signo.'}`],scene:{items:it}}}},
+{id:'pol',ic:'r θ',n:'Doble en polares',d:'Integral doble con x = r cos θ, y = r sin θ y dA = r dr dθ. Puedes escribir f con x, y o con r, θ (usa t o θ).',
+ F:[['f','Integrando f (con x, y, r o θ)','exp(-(x^2+y^2))',2],['a','θ desde','0'],['b','θ hasta','2*pi'],['g1','r desde (en función de θ)','0'],['g2','r hasta (en función de θ)','2']],
+ P:[['Área del círculo r ≤ 3',{f:'1',a:'0',b:'2*pi',g1:'0',g2:'3'}],['e^−(x²+y²) en r ≤ 2',{f:'exp(-(x^2+y^2))',a:'0',b:'2*pi',g1:'0',g2:'2'}],['Área de la cardioide',{f:'1',a:'0',b:'2*pi',g1:'0',g2:'1+cos(θ)'}],['Pétalo de r = cos 2θ',{f:'1',a:'-pi/4',b:'pi/4',g1:'0',g2:'cos(2*θ)'}],['Volumen bajo 9 − x² − y²',{f:'9-x^2-y^2',a:'0',b:'2*pi',g1:'0',g2:'3'}]],
+ solve(v){const F=comp(v.f),G1=comp(v.g1),G2=comp(v.g2),a=K(v.a),b=K(v.b),sc=(t,r)=>({t,r,x:r*Math.cos(t),y:r*Math.sin(t)});
+  const inn=(t,n)=>{const lo=G1({t}),hi=G2({t});return[I(r=>F(sc(t,r))*r,lo,hi,n),lo,hi]};
+  const tot=n=>I(t=>inn(t,n)[0],a,b,n),R=tot(24),R0=tot(12),it=[];
+  const pts=[a,(a+b)/2,b].map(t=>{const[g,lo,hi]=inn(t,24);return`G(θ=${fx(t)}) = ${iint(fx(lo),fx(hi),'f·r dr')} = <b>${fx(g)}</b>`});
+  mesh((i,j)=>{const t=a+(b-a)*i/36,lo=G1({t}),hi=G2({t}),r=lo+(hi-lo)*j/10,q=sc(t,r);return[q.x,q.y,F(q)]},36,10,it);
+  const bd=h=>u=>{const t=a+(b-a)*u,r=h({t});return[r*Math.cos(t),r*Math.sin(t),0]};base(bd(G1),bd(G2),80,it);
+  return{main:fx(R),tags:outTag(R)+errTag(R,R0),steps:[`<b>Cambio a polares.</b> x = r cos θ, y = r sin θ, x² + y² = r², y el elemento de área es <span class="m">dA = r dr dθ</span>`,`<b>Planteamiento.</b><span class="m">${iint(v.a,v.b,'')}${iint(v.g1,v.g2,`(${v.f}) · r dr`)} dθ</span>`,`<b>Integral en r</b>, evaluada en tres valores de θ:<span class="m">${pts.join('<br>')}</span>`,`<b>Integral en θ.</b><span class="m">${iint(fx(a),fx(b),'G(θ) dθ')} = ${fx(R)}</span>`],scene:{items:it}}}},
+{id:'tri',ic:'∭',n:'Triple',d:'Integral triple en coordenadas rectangulares, cilíndricas o esféricas. El jacobiano (r o ρ² sin φ) se aplica automáticamente.',
+ F:[['f','Integrando f','1',2],['sys','Sistema de coordenadas','cil',2,[['rect','Rectangulares (x, y, z)'],['cil','Cilíndricas (θ, r, z)'],['esf','Esféricas (θ, φ, ρ)']]],['a','','0'],['b','','2*pi'],['m1','','0'],['m2','','2'],['i1','','r^2'],['i2','','4']],
+ lab(v){const n=SYS[v.sys||'cil'];return{a:`${n[0]} desde`,b:`${n[0]} hasta`,m1:`${n[1]} desde (en función de ${n[0]})`,m2:`${n[1]} hasta`,i1:`${n[2]} desde (en función de ${n[0]}, ${n[1]})`,i2:`${n[2]} hasta`}},
+ P:[['Cubo: x + y + z',{f:'x+y+z',sys:'rect',a:'0',b:'1',m1:'0',m2:'1',i1:'0',i2:'1'}],['Entre z = r² y z = 4',{f:'1',sys:'cil',a:'0',b:'2*pi',m1:'0',m2:'2',i1:'r^2',i2:'4'}],['Cono z = r, hasta z = 2',{f:'1',sys:'cil',a:'0',b:'2*pi',m1:'0',m2:'2',i1:'r',i2:'2'}],['Esfera de radio 2',{f:'1',sys:'esf',a:'0',b:'2*pi',m1:'0',m2:'pi',i1:'0',i2:'2'}],['ρ² en la bola unitaria',{f:'rho^2',sys:'esf',a:'0',b:'2*pi',m1:'0',m2:'pi',i1:'0',i2:'1'}]],
+ solve(v){const s=v.sys,N=VN[s],F=comp(v.f),M1=comp(v.m1),M2=comp(v.m2),I1=comp(v.i1),I2=comp(v.i2),a=K(v.a),b=K(v.b),
+  J=s==='rect'?()=>1:s==='cil'?q=>q.r:q=>q.rho*q.rho*Math.sin(q.p);
+  const sc=(o,m,i)=>{const w=[o,m,i],q={x:0,y:0,z:0};N.forEach((k,j)=>q[k]=w[j]);const c=toXYZ(s,w);q.x=c[0];q.y=c[1];q.z=c[2];return q};
+  const tot=n=>I(o=>{const m1=M1({[N[0]]:o}),m2=M2({[N[0]]:o});return I(m=>{const e={[N[0]]:o,[N[1]]:m},i1=I1(e),i2=I2(e);return I(i=>{const q=sc(o,m,i);return F(q)*J(q)},i1,i2,n)},m1,m2,n)},a,b,n);
+  const R=tot(20),R0=tot(10),it=[],pt=(o,m,i)=>toXYZ(s,[o,m,i]);
+  for(const side of[I1,I2])mesh((i,j)=>{const o=a+(b-a)*i/20,m1=M1({[N[0]]:o}),m2=M2({[N[0]]:o}),m=m1+(m2-m1)*j/12;return pt(o,m,side({[N[0]]:o,[N[1]]:m}))},20,12,it);
+  const nm=SYS[s];
+  return{main:fx(R),tags:outTag(R)+errTag(R,R0),steps:[`<b>Sistema y jacobiano.</b> Coordenadas ${s==='rect'?'rectangulares':s==='cil'?'cilíndricas':'esféricas'} (${nm.join(', ')}). Elemento de volumen:<span class="m">dV = ${JAC[s]==='1'?'dz dy dx':JAC[s]+` d${nm[2]} d${nm[1]} d${nm[0]}`}</span>`,`<b>Planteamiento.</b><span class="m">${iint(v.a,v.b,'')}${iint(v.m1,v.m2,'')}${iint(v.i1,v.i2,`(${v.f}) · ${JAC[s]} d${nm[2]}`)} d${nm[1]} d${nm[0]}</span>`,`<b>Cálculo.</b> Se integra de adentro hacia afuera con cuadratura Gauss-Legendre anidada (20 nodos por variable, 8 000 evaluaciones del integrando).`,`<b>Resultado.</b><span class="m">∭ = ${fx(R)}</span>${v.f.trim()==='1'?'Con f = 1 el resultado es el volumen del sólido.':''}`],scene:{items:it}}}},
+{id:'lin',ic:'∫C',n:'Integral de línea',d:'Integral de línea de un campo escalar (respecto a la longitud de arco) o de un campo vectorial (trabajo o circulación) sobre una curva paramétrica.',
+ F:[['kind','Tipo de integral','vec',2,[['esc','Escalar: ∫ f ds'],['vec','Vectorial: ∫ F · dr']]],['xt','x(t)','t'],['yt','y(t)','t^2'],['zt','z(t)','0',2],['a','t desde','0'],['b','t hasta','1'],['f','f(x, y, z)  [escalar]','x+y',2],['P','P(x, y, z)  [vectorial]','2*x*y'],['Q','Q(x, y, z)','x^2'],['R','R(x, y, z)','0']],
+ P:[['∫(x+y) ds sobre un segmento',{kind:'esc',xt:'t',yt:'t',zt:'0',a:'0',b:'1',f:'x+y'}],['Circulación de ⟨−y, x⟩',{kind:'vec',xt:'cos(t)',yt:'sin(t)',zt:'0',a:'0',b:'2*pi',P:'-y',Q:'x',R:'0'}],['Campo conservativo sobre y = x²',{kind:'vec',xt:'t',yt:'t^2',zt:'0',a:'0',b:'1',P:'2*x*y',Q:'x^2',R:'0'}],['Hélice: ∫ z ds',{kind:'esc',xt:'cos(t)',yt:'sin(t)',zt:'t',a:'0',b:'2*pi',f:'z'}]],
+ solve(v){const esc=v.kind==='esc',X=comp(v.xt),Y=comp(v.yt),Z=comp(v.zt),dX=comp(D(v.xt,'t')),dY=comp(D(v.yt,'t')),dZ=comp(D(v.zt,'t')),a=K(v.a),b=K(v.b);
+  const pt=t=>({t,x:X({t}),y:Y({t}),z:Z({t})}),F=esc?comp(v.f):null,Pf=comp(v.P),Qf=comp(v.Q),Rf=comp(v.R);
+  const g=t=>{const q=pt(t),d=[dX({t}),dY({t}),dZ({t})];return esc?F(q)*Math.hypot(...d):Pf(q)*d[0]+Qf(q)*d[1]+Rf(q)*d[2]};
+  const R=IP(g,a,b,16,8),R0=IP(g,a,b,8,4),it=[],n=80;
+  for(let i=0;i<n;i++){const p=pt(a+(b-a)*i/n),q=pt(a+(b-a)*(i+1)/n);it.push({t:'l',a:[p.x,p.y,p.z],b:[q.x,q.y,q.z],c:i/n,w:3})}
+  const pts=[];for(let i=0;i<=14;i++)pts.push(pt(a+(b-a)*i/14));
+  const sz=Math.max(1e-6,...pts.map(p=>Math.hypot(p.x,p.y,p.z)));
+  if(esc){const mx=Math.max(1e-9,...pts.map(p=>Math.abs(F(p))));pts.forEach(p=>it.push({t:'l',a:[p.x,p.y,p.z],b:[p.x,p.y,p.z+.6*sz*F(p)/mx],c:'--ac2',w:1}))}
+  else{const mx=Math.max(1e-9,...pts.map(p=>Math.hypot(Pf(p),Qf(p),Rf(p))));pts.forEach(p=>it.push({t:'a',a:[p.x,p.y,p.z],b:[p.x+.4*sz*Pf(p)/mx,p.y+.4*sz*Qf(p)/mx,p.z+.4*sz*Rf(p)/mx],c:'--ac2',w:1.5}))}
+  const A=pt(a),B=pt(b);it.push({t:'d',a:[A.x,A.y,A.z],c:'--ok',r:5},{t:'d',a:[B.x,B.y,B.z],c:'--ac2',r:5});
+  let note='';if(!esc){const cr=curlOf(v);note=isCons(cr)?`<b>Campo conservativo.</b> rot F = 0, así que el valor sólo depende de los extremos A = (${[A.x,A.y,A.z].map(fx)}) y B = (${[B.x,B.y,B.z].map(fx)}).`:`<b>Campo no conservativo.</b> rot F = ⟨${cr.join(', ')}⟩ ≠ 0; el valor depende de la trayectoria.`}
+  return{main:fx(R),tags:outTag(R)+errTag(R,R0),steps:[`<b>Parametrización.</b><span class="m">r(t) = ⟨${SY(v.xt)}, ${SY(v.yt)}, ${SY(v.zt)}⟩,  ${fx(a)} ≤ t ≤ ${fx(b)}</span>`,`<b>Vector tangente.</b><span class="m">r′(t) = ⟨${D(v.xt,'t')}, ${D(v.yt,'t')}, ${D(v.zt,'t')}⟩${esc?'<br>ds = |r′(t)| dt':''}</span>`,`<b>Integrando en t.</b><span class="m">${esc?`f(r(t))·|r′(t)|, con f = ${v.f}`:`F(r(t))·r′(t), con F = ⟨${v.P}, ${v.Q}, ${v.R}⟩`}</span>`,`<b>Resultado.</b><span class="m">${iint(fx(a),fx(b),'… dt')} = ${fx(R)}</span>`,...(note?[note]:[])],scene:{items:it,top:A.z===0&&B.z===0&&pts.every(p=>p.z===0)}}}},
+{id:'div',ic:'∇×',n:'Divergencia y rotacional',d:'Calcula div F y rot F de forma simbólica, evalúalos en un punto y comprueba si el campo es conservativo. La gráfica muestra el campo en un cubo 3D, coloreado por la divergencia; el botón «Corte» muestra el plano z = z₀.',
+ F:[['P','P(x, y, z)','x^2'],['Q','Q(x, y, z)','x*y'],['R','R(x, y, z)','0'],['x0','Punto: x₀','1'],['y0','y₀','1'],['z0','z₀','1'],['L','Ventana de la gráfica: [−L, L]','2']],
+ P:[['⟨x², xy, 0⟩',{P:'x^2',Q:'x*y',R:'0'}],['⟨yz, xz, xy⟩ (irrotacional)',{P:'y*z',Q:'x*z',R:'x*y'}],['⟨−y, x, 0⟩ (rotación)',{P:'-y',Q:'x',R:'0'}],['⟨x, y, 0⟩ (fuente)',{P:'x',Q:'y',R:'0'}],['⟨yz, zx, −2xy⟩',{P:'y*z',Q:'z*x',R:'-2*x*y'}]],
+ solve(v){const dv=SY(`(${D(v.P,'x')})+(${D(v.Q,'y')})+(${D(v.R,'z')})`),cr=curlOf(v),p={x:K(v.x0),y:K(v.y0),z:K(v.z0)},L=Math.abs(K(v.L))||2,dF=comp(dv),cF=cr.map(comp),Pf=comp(v.P),Qf=comp(v.Q),Rf=comp(v.R),z0=p.z;
+  const ex=[{t:'d',a:[p.x,p.y,z0],c:'--ac2',r:5}],cons=isCons(cr);
+  return{main:`div F = ${dv}`,tags:`<span class="tag">rot F = <b>⟨${cr.join(', ')}⟩</b></span><span class="tag">${cons?'conservativo (rot F = 0)':'no conservativo'}</span>`,steps:[`<b>Derivadas parciales.</b><span class="m">P<sub>x</sub> = ${D(v.P,'x')}   Q<sub>y</sub> = ${D(v.Q,'y')}   R<sub>z</sub> = ${D(v.R,'z')}</span>`,`<b>Divergencia.</b> Suma P<sub>x</sub> + Q<sub>y</sub> + R<sub>z</sub>:<span class="m">div F = ${dv}</span>`,`<b>Rotacional.</b> ⟨R<sub>y</sub> − Q<sub>z</sub>, P<sub>z</sub> − R<sub>x</sub>, Q<sub>x</sub> − P<sub>y</sub>⟩:<span class="m">rot F = ⟨${cr.join(', ')}⟩</span>`,`<b>En el punto (${fx(p.x)}, ${fx(p.y)}, ${fx(p.z)}).</b><span class="m">div F = ${fx(dF(p))}<br>rot F = ⟨${cF.map(f=>fx(f(p))).join(', ')}⟩</span>${dF(p)>1e-9?'Es una fuente en ese punto.':dF(p)<-1e-9?'Es un sumidero en ese punto.':'La divergencia es nula: el flujo local es solenoidal.'}`],
+  scene:quiver((x,y,z)=>[Pf({x,y,z}),Qf({x,y,z}),Rf({x,y,z})],(x,y,z)=>dF({x,y,z}),L,z0,ex,'Color de las flechas: div F (azul = menor, naranja = mayor)')}}},
+{id:'gra',ic:'∇f',n:'Gradiente',d:'Campo gradiente ∇f de una función escalar: dirección de máximo crecimiento y su magnitud en un punto. Las flechas del cubo 3D se colorean por |∇f|; el botón «Corte» muestra el plano z = z₀.',
+ F:[['f','f(x, y, z)','x^2-y^2',2],['x0','Punto: x₀','1'],['y0','y₀','2'],['z0','z₀','0'],['L','Ventana de la gráfica: [−L, L]','3']],
+ P:[['f = x² − y²',{f:'x^2-y^2',x0:'1',y0:'2',z0:'0',L:'3'}],['f = x²y + yz',{f:'x^2*y+y*z',x0:'1',y0:'2',z0:'3',L:'3'}],['f = x² + y² (paraboloide)',{f:'x^2+y^2',x0:'1',y0:'1',z0:'0',L:'2'}],['f = sin(x)·cos(y)',{f:'sin(x)*cos(y)',x0:'1',y0:'1',z0:'0',L:'3'}]],
+ solve(v){const c=['x','y','z'].map(k=>D(v.f,k)),g=c.map(comp),p={x:K(v.x0),y:K(v.y0),z:K(v.z0)},L=Math.abs(K(v.L))||2,z0=p.z,val=g.map(f=>f(p)),m=Math.hypot(...val),f=comp(v.f);
+  const ex=[{t:'a',a:[p.x,p.y,z0],b:[p.x+.3*L*val[0]/(m||1),p.y+.3*L*val[1]/(m||1),p.z+.3*L*val[2]/(m||1)],c:'--ac2',w:3.5},{t:'d',a:[p.x,p.y,z0],c:'--ac2',r:5}];
+  return{main:`∇f = ⟨${c.map(s=>s.replace(/ \* /g,'·')).join(', ')}⟩`,tags:`<span class="tag">|∇f| en el punto <b>${fx(m)}</b></span>`,steps:[`<b>Derivadas parciales.</b><span class="m">f<sub>x</sub> = ${c[0]}<br>f<sub>y</sub> = ${c[1]}<br>f<sub>z</sub> = ${c[2]}</span>`,`<b>Evaluación en (${fx(p.x)}, ${fx(p.y)}, ${fx(p.z)}).</b><span class="m">∇f = ⟨${val.map(fx).join(', ')}⟩</span>`,`<b>Magnitud y dirección.</b><span class="m">|∇f| = ${fx(m)}<br>u = ⟨${val.map(q=>fx(q/(m||1))).join(', ')}⟩</span>${m<1e-9?'Es un punto crítico: ∇f = 0.':'f crece más rápido en la dirección u; ∇f es perpendicular a la curva de nivel que pasa por el punto.'}`,`<b>Valor de la función.</b><span class="m">f(${fx(p.x)}, ${fx(p.y)}, ${fx(p.z)}) = ${fx(f(p))}</span>`],
+  scene:quiver((x,y,z)=>g.map(f=>f({x,y,z})),(x,y,z)=>Math.hypot(...g.map(f=>f({x,y,z}))),L,z0,ex,'Color de las flechas: |∇f| (azul = menor, naranja = mayor)')}}}
+];
+
+/* ---------- interfaz ---------- */
+let cur=null,vals={};
+function build(m){cur=m;$('#ttl').textContent=m.n;$('#dsc').textContent=m.d;$('#gt').textContent='Gráfica';
+ document.querySelectorAll('#nav button').forEach(b=>b.setAttribute('aria-current',b.dataset.id===m.id));
+ $('#pre').innerHTML='';m.P.forEach(([n,o])=>{const b=document.createElement('button');b.type='button';b.textContent=n;b.onclick=()=>{fill(o);run()};$('#pre').append(b)});
+ const f=$('#frm');f.innerHTML='';
+ m.F.forEach(([k,l,d,w,o])=>{const q=document.createElement('div');q.className='f'+(w===2?' w2':'');q.dataset.k=k;
+  q.innerHTML=`<label for="i_${k}">${l}</label>`+(o?`<select id="i_${k}">${o.map(([a,b])=>`<option value="${a}">${b}</option>`).join('')}</select>`:`<input id="i_${k}" spellcheck="false" autocapitalize="off">`);f.append(q);q.querySelector('[id]').value=d});
+ f.insertAdjacentHTML('beforeend','<button class="go" type="submit">Resolver</button>');
+ f.oninput=f.onchange=()=>{relab();if(cur.id==='lin')vis()};relab();if(m.id==='lin')vis();
+ $('#out').innerHTML='<h2>Resolución</h2><p style="color:var(--mu);margin:0">Elige un ejemplo o escribe tu problema y pulsa «Resolver».</p>';
+ run()}
+function get(){const o={};cur.F.forEach(([k])=>o[k]=$('#i_'+k).value);return o}
+function fill(o){for(const k in o)$('#i_'+k).value=o[k];relab();if(cur.id==='lin')vis()}
+function relab(){if(!cur.lab)return;const L=cur.lab(get());for(const k in L)document.querySelector(`[data-k="${k}"] label`).textContent=L[k]}
+function vis(){const e=$('#i_kind').value==='esc';['f'].forEach(k=>$('#i_'+k).closest('.f').hidden=!e);['P','Q','R'].forEach(k=>$('#i_'+k).closest('.f').hidden=e)}
+function run(){const o=$('#out');try{const r=cur.solve(get());
+  o.innerHTML=`<h2>Resolución</h2><div class="big">${r.main}</div><div class="tags">${r.tags}</div><ol class="steps">${r.steps.map(s=>`<li>${s}</li>`).join('')}</ol>`;setScene(r.scene)}
+ catch(e){o.innerHTML=`<h2>Resolución</h2><div class="err"><b>No se pudo calcular.</b> ${String(e.message||e).replace(/</g,'&lt;')}<br>Revisa la sintaxis: usa * para multiplicar, ^ para potencias, pi, exp(), sin(), sqrt(); las variables van en minúscula.</div>`}}
+$('#frm').onsubmit=e=>{e.preventDefault();run()};
+MODES.forEach(m=>{const b=document.createElement('button');b.type='button';b.dataset.id=m.id;b.innerHTML=`<i>${m.ic}</i><span>${m.n}</span>`;b.onclick=()=>build(m);$('#nav').append(b)});
+$('#tg').onclick=()=>{const n=dark()?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('theme',n)}catch(e){}draw()};
+try{const t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}
+build(MODES[0]);
+</script>
+</body>
+</html>
